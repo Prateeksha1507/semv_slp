@@ -1,41 +1,59 @@
 .admin-dashboard {
-  max-width: 700px;
+  max-width: 900px;
   margin: 40px auto;
-  padding: 20px;
+  padding: 30px;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.admin-dashboard h2 {
+.dashboard-section {
+  margin-bottom: 50px;
+}
+
+.dashboard-section h2 {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   color: #333;
+  font-size: 1.8rem;
+  border-bottom: 2px solid #007bff;
+  display: inline-block;
+  padding-bottom: 5px;
 }
 
 .request-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f9f9f9;
-  padding: 12px 18px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  border-left: 5px solid #007bff;
+  background: #f7f9fc;
+  padding: 14px 20px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  border-left: 6px solid #007bff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.request-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .request-info p {
   margin: 0;
   font-size: 15px;
+  color: #333;
 }
 
 .request-actions button {
   margin-left: 8px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
+  transition: background-color 0.2s;
 }
 
 .approve-btn {
@@ -48,10 +66,44 @@
   color: white;
 }
 
-.approve-btn:hover {
-  background-color: #218838;
+.return-btn {
+  background-color: #ffc107;
+  color: white;
 }
 
-.reject-btn:hover {
-  background-color: #c82333;
+.view-more-btn,
+.view-details-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.approve-btn:hover { background-color: #218838; }
+.reject-btn:hover { background-color: #c82333; }
+.return-btn:hover { background-color: #e0a800; }
+.view-more-btn:hover, .view-details-btn:hover { background-color: #0056b3; }
+
+.status {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status.approved { background-color: #d4edda; color: #155724; }
+.status.rejected { background-color: #f8d7da; color: #721c24; }
+.status.pending { background-color: #fff3cd; color: #856404; }
+.status.borrowed { background-color: #f5c6cb; color: #721c24; }
+
+.empty-text {
+  text-align: center;
+  color: #777;
+  font-style: italic;
 }

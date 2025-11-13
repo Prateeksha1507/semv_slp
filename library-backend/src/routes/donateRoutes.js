@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { donateController } from "../controllers/donateController.js";
-import { authMiddleware } from "../middleware/auth.js";
+import { authMiddleware, adminMiddleware } from "../middleware/auth.js";
 
 const router = Router();
 
-// router.post("/:memberId/:bookId", authMiddleware, donateController.donateBook);
-router.get("/", authMiddleware, donateController.getAllDonations);
+// Only Admins can view all donations
+router.get("/", authMiddleware, adminMiddleware, donateController.getAllDonations);
 
 export default router;

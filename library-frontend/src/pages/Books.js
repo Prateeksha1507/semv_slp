@@ -42,8 +42,9 @@ const Books = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
+<h2>Available Books</h2>
 
-      <h2>Available Books</h2>
+<div className="books">
 
       {/* 📖 Book List */}
       <div className="book-list">
@@ -71,7 +72,9 @@ const Books = () => {
           <p>No books found.</p>
         )}
       </div>
-    </div>
+
+</div>
+          </div>
   );
 };
 

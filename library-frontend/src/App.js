@@ -17,38 +17,31 @@ import Logout from "./pages/Logout";
 import AddBook from "./pages/AddBook";
 import BookDetails from "./pages/BookDetails";
 import Profile from "./pages/Profile";
-        
-import MembershipForm from "./pages/MembershipForm";
 import VolunteerForm from "./pages/VolunteerForm";
 import AdminDashboard from "./pages/AdminDashboard";
+import BorrowRequests from "./pages/BorrowRequests";
+import DonationRequests from "./pages/DonationRequests";
+import BorrowedBooks from "./pages/BorrowedBooks";
+
 function App() {
-
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
     <BrowserRouter>
       <Header />
       <Routes>
-
-
-
-
-        <Route path="/membership" element={<MembershipForm />} />
-        <Route path="/volunteer" element={<VolunteerForm />} />
-
+        {/* Public Pages */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path="/terms" element={<TermsAndConditions />} />
         <Route path="/register" element={<Register setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path="/terms" element={<TermsAndConditions />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
-        <Route path="/logout" element={<Logout setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path="/add-book" element={<AddBook />} />
-        <Route path="/books/:bookId" element={<BookDetails />} />
-        <Route path="/profile" element={<Profile />} />
-        
-        <Route path="/adminDashboard" element={<AdminDashboard />} />
+
+        <Route path="/volunteer" element={<VolunteerForm />} />
+
+        {/* Protected Pages */}
         <Route
           path="/books"
           element={
@@ -57,18 +50,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+        <Route path="/books/:bookId" element={<BookDetails />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/add-book" element={<AddBook />} />
+        <Route path="/logout" element={<Logout setIsLoggedIn={setIsLoggedIn} />} />
 
-        
-
-        {/* <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        /> */}
+        {/* Admin Dashboard */}
+        <Route path="/adminDashboard" element={<AdminDashboard />} />
+        <Route path="/borrow-requests" element={<BorrowRequests />} />
+        <Route path="/donation-requests" element={<DonationRequests />} />
+        <Route path="/borrowed-books" element={<BorrowedBooks />} />
       </Routes>
       <Footer />
       <Toast />

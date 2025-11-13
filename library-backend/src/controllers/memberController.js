@@ -76,34 +76,40 @@ export const memberController = {
 },
 
   async update(req, res) {
-    try {
-      const { memberId } = req.params;
-      const { name, email, password, phone } = req.body;
+  try {
+    const { memberId } = req.params;
+    const { name, email, password, phone } = req.body;
 
-      const member = await Member.findById(memberId);
-      if (!member) return res.status(404).json({ message: "Member not found" });
+    const member = await Member.findById(memberId);
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
-      if (name !== undefined) member.name = name;
-      if (email !== undefined) member.email = email;
-      if (phone !== undefined) member.phone = phone;
-      if (password) member.password = password;
+    if (name !== undefined) member.name = name;
+    if (email !== undefined) member.email = email;
+    if (phone !== undefined) member.phone = phone;
+    if (password) member.password = password;
 
-      await member.save();
-      res.json({
-        message: "Member updated",
-        user: {
-          id: member._id,
-          name: member.name,
-          email: member.email,
-          phone: member.phone,
-          role: member.role, // ✅ Include this
-        },
-      });
-    } catch (e) {
-      if (e.code === 11000) return res.status(409).json({ message: "Email already in use" });
-      res.status(500).json({ message: e.message });
-    }
-  },
+    await member.save();
+
+    // Reissue the token to include updated information
+    const token = signToken(member);
+
+    res.json({
+      message: "Member updated",
+      token, // Send updated token
+      user: {
+        id: member._id,
+        name: member.name,
+        email: member.email,
+        phone: member.phone,
+        role: member.role, // Include this
+      },
+    });
+  } catch (e) {
+    if (e.code === 11000) return res.status(409).json({ message: "Email already in use" });
+    res.status(500).json({ message: e.message });
+  }
+},
+
 
   async remove(req, res) {
     try {

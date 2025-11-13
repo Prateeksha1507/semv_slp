@@ -1,28 +1,49 @@
 import Book from "../models/Book.js";
-import Borrow from "../models/Borrow.js";
+import DonationRequest from "../models/DonationRequest.js";
 import Donate from "../models/Donate.js";
 import Member from "../models/Member.js";
 
 export const booksController = {
-   async addBook(req, res) {
+  // Add book - Logic based on user role
+  async addBook(req, res) {
     try {
       const { title, author, genres, description, coverImage } = req.body;
-
+      const donorId = req.user?.id;
+      if (!donorId) {
+        return res.status(401).json({ message: "Unauthorized. Please log in." });
+      }
       if (!title || !author)
         return res.status(400).json({ message: "Title and author are required" });
 
-      // ✅ Logged-in user from JWT
-      const donorId = req.user?.id;
-      if (!donorId)
-        return res.status(401).json({ message: "Unauthorized: Donor not found" });
-
       const donor = await Member.findById(donorId);
-      if (!donor)
-        return res.status(404).json({ message: "Member not found" });
+      if (!donor) return res.status(404).json({ message: "Member not found" });
 
-      // ✅ Create book using image URL instead of file path
+      // If the user is a member (donor), they should send a request instead of directly adding the book
+      if (donor.role === "member") {
+        const existingRequest = await DonationRequest.findOne({ donor: donorId, title, author, status: "pending" });
+        if (existingRequest) {
+          return res.status(400).json({ message: "Donation request for this book is already pending" });
+        }
+
+        const request = new DonationRequest({
+          donor: donorId,
+          title,
+          author,
+          genres: Array.isArray(genres) ? genres : genres ? [genres] : [],
+          description,
+          coverImage,
+        });
+
+        await request.save();
+        return res.status(201).json({
+          message: `Donation request for "${title}" submitted successfully`,
+          request,
+        });
+      }
+
+      // If the user is an admin, directly add the book to the database
       const book = await Book.create({
-        coverImage: coverImage || null, // <—— Cloudinary image URL from frontend
+        coverImage: coverImage || null,
         title,
         author,
         genres: Array.isArray(genres) ? genres : genres ? [genres] : [],
@@ -31,7 +52,6 @@ export const booksController = {
         status: "available",
       });
 
-      // ✅ Record in donation history
       await Donate.create({
         donor: donorId,
         book: book._id,
@@ -43,77 +63,92 @@ export const booksController = {
       });
     } catch (e) {
       console.error("Error donating book:", e);
-      res.status(500).json({ message: "Failed to donate book", error: e.message });
+      res.status(500).json({
+        message: "Failed to donate book",
+        error: e.message,
+      });
     }
   },
 
+  // Get all books
   async getAllBooks(req, res) {
     try {
-      const { search, author, status, genre } = req.query;
-      const filter = {};
-      if (search) filter.title = { $regex: search, $options: "i" };
-      if (author) filter.author = { $regex: author, $options: "i" };
-      if (status) filter.status = status;
-      if (genre) filter.genres = { $in: [genre] };
-
-      const books = await Book.find(filter).sort({ createdAt: -1 });
+      const books = await Book.find();  // Fetch all books from the database
       res.json(books);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
   },
 
+  // Get a specific book by its ID
   async getBookById(req, res) {
     try {
       const { bookId } = req.params;
       const book = await Book.findById(bookId);
-      if (!book) return res.status(404).json({ message: "Book not found" });
+      if (!book) {
+        return res.status(404).json({ message: "Book not found" });
+      }
       res.json(book);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
   },
 
+  // Update book details
   async updateBook(req, res) {
     try {
       const { bookId } = req.params;
-      const { title, author, genres, status, description } = req.body;
+      const { title, author, genres, description, coverImage } = req.body;
 
-      const book = await Book.findById(bookId);
-      if (!book) return res.status(404).json({ message: "Book not found" });
+      const updatedBook = await Book.findByIdAndUpdate(
+        bookId,
+        { title, author, genres, description, coverImage },
+        { new: true } // This will return the updated book
+      );
 
-      if (title !== undefined) book.title = title;
-      if (author !== undefined) book.author = author;
-      if (description !== undefined) book.description = description;
-      if (status !== undefined) book.status = status;
-      if (genres !== undefined)
-        book.genres = Array.isArray(genres) ? genres : genres ? [genres] : [];
+      if (!updatedBook) {
+        return res.status(404).json({ message: "Book not found" });
+      }
 
-      await book.save();
-      res.json(book);
+      res.json({ message: "Book updated successfully", updatedBook });
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
   },
 
+  // Delete a book
   async deleteBook(req, res) {
     try {
       const { bookId } = req.params;
-      const deleted = await Book.findByIdAndDelete(bookId);
-      if (!deleted) return res.status(404).json({ message: "Book not found" });
-      res.json({ message: "Book deleted" });
+      const deletedBook = await Book.findByIdAndDelete(bookId);
+
+      if (!deletedBook) {
+        return res.status(404).json({ message: "Book not found" });
+      }
+
+      // Optionally, delete any donations associated with this book
+      await Donate.deleteMany({ book: bookId });
+
+      res.json({ message: `Book "${deletedBook.title}" deleted successfully` });
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
   },
 
+  // Get issue history of a book (who borrowed it)
   async getIssueHistory(req, res) {
     try {
       const { bookId } = req.params;
-      const history = await Borrow.find({ book: bookId })
-        .populate("borrower", "name email")
-        .sort({ createdAt: -1 });
-      res.json(history);
+      const book = await Book.findById(bookId);
+
+      if (!book) {
+        return res.status(404).json({ message: "Book not found" });
+      }
+
+      // Assuming "borrowHistory" is tracked in the Book model or in a related collection
+      const issues = await Donate.find({ book: bookId }).populate("donor", "name email");
+
+      res.json(issues);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }

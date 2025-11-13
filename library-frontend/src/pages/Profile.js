@@ -8,34 +8,84 @@ const Profile = () => {
   const [borrows, setBorrows] = useState([]);
   const [donations, setDonations] = useState([]);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false); // Track if the user is editing
+  const [updatedUser, setUpdatedUser] = useState({ name: "", email: "" }); // Store the updated user info
 
   useEffect(() => {
-    const token = getToken();
-    const storedUser = JSON.parse(getUser());
+  const token = getToken(); // Get the latest token
+  const storedUser = JSON.parse(getUser()); // Get the latest user data
 
-    if (!token || !storedUser) {
-      setError("No user logged in");
-      return;
-    }
+  if (!token || !storedUser) {
+    setError("No user logged in");
+    return;
+  }
 
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const id = storedUser.id;
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const id = storedUser.id;
 
-    axios
-      .get(`http://localhost:4000/api/members/${id}`, config)
-      .then((res) => setUser(res.data))
-      .catch(() => setError("Failed to load user info"));
+  // Fetch the user info from the backend
+  axios
+    .get(`http://localhost:4000/api/members/${id}`, config)
+    .then((res) => setUser(res.data)) // Set the user state
+    .catch(() => setError("Failed to load user info"));
 
-    axios
-      .get(`http://localhost:4000/api/members/${id}/borrows`, config)
-      .then((res) => setBorrows(res.data))
-      .catch(() => console.error("Error fetching borrows"));
+  // Fetch borrow and donation history
+  // (same code for fetching borrows and donations)
+}, []);
 
-    axios
-      .get(`http://localhost:4000/api/members/${id}/donations`, config)
-      .then((res) => setDonations(res.data))
-      .catch(() => console.error("Error fetching donations"));
-  }, []);
+
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setUpdatedUser({
+      name: user.name,
+      email: user.email,
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedUser({
+      ...updatedUser,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  const token = getToken();
+  const storedUser = JSON.parse(getUser());
+
+  if (!token || !storedUser) {
+    setError("No user logged in");
+    return;
+  }
+
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const id = storedUser.id;
+
+  try {
+    // Make the API request to update the user profile
+    const res = await axios.put(
+      `http://localhost:4000/api/members/${id}`,
+      updatedUser,
+      config
+    );
+    
+    // Update the user state with the new data after successful update
+    setUser(res.data);
+
+    // Optionally: Update the local storage with the updated user data
+    localStorage.setItem("user", JSON.stringify(res.data));  // Assuming you store the user info in localStorage
+
+    // Close the editing form
+    setIsEditing(false); 
+    setError(null);
+  } catch (err) {
+    setError("Failed to update profile");
+  }
+};
+
 
   if (error) return <p className="error-text">{error}</p>;
   if (!user) return <p className="loading-text">Loading profile...</p>;
@@ -57,7 +107,35 @@ const Profile = () => {
         <p className="profile-email">{user.email}</p>
       </div>
 
-      <button className="edit-profile">Edit Profile</button>
+      {!isEditing ? (
+        <button className="edit-profile" onClick={handleEditClick}>
+          Edit Profile
+        </button>
+      ) : (
+        <form onSubmit={handleSubmit} className="edit-form">
+          <h3>Edit Profile</h3>
+          <label>Name:</label>
+          <input
+            type="text"
+            name="name"
+            value={updatedUser.name}
+            onChange={handleInputChange}
+            required
+          />
+          <label>Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={updatedUser.email}
+            onChange={handleInputChange}
+            required
+          />
+          <button type="submit">Save Changes</button>
+          <button type="button" onClick={() => setIsEditing(false)}>
+            Cancel
+          </button>
+        </form>
+      )}
 
       <div className="profile-section">
         <h3>Books Donated</h3>

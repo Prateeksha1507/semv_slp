@@ -6,6 +6,7 @@ import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
   const [requests, setRequests] = useState([]);
+  const [donationRequests, setDonationRequests] = useState([]);
   const [borrowedBooks, setBorrowedBooks] = useState([]);
   const navigate = useNavigate();
 
@@ -15,48 +16,85 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (!token || !userData) return navigate("/login");
     if (userData.role !== "admin") return navigate("/login");
+    fetchData();
+  }, [token, navigate]);
 
-    fetchRequests();
-    fetchBorrowedBooks();
-  }, [token, userData, navigate]);
+const fetchData = async () => {
+  try {
+    // Fetch Borrow Requests
+    const borrowRes = await axios.get("http://localhost:4000/api/borrows", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-  const fetchRequests = async () => {
+    // Separate the requests into pending and non-pending
+    const pendingBorrowRequests = borrowRes.data
+      .filter((r) => r.status === "pending")
+      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); // Sort by requestDate (newest first)
+    
+    const nonPendingBorrowRequests = borrowRes.data
+      .filter((r) => r.status !== "pending")
+      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); // Sort by requestDate (newest first)
+    
+    // Combine pending and non-pending requests, with pending first
+    const sortedBorrowRequests = [...pendingBorrowRequests, ...nonPendingBorrowRequests];
+    setRequests(sortedBorrowRequests.slice(0, 5)); // Only show the top 5 requests
+
+    // Fetch Donation Requests
+    const donationRes = await axios.get("http://localhost:4000/api/donation-requests", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    // Separate the requests into pending and non-pending
+    const pendingDonationRequests = donationRes.data
+      .filter((d) => d.status === "pending")
+      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); // Sort by requestDate (newest first)
+    
+    const nonPendingDonationRequests = donationRes.data
+      .filter((d) => d.status !== "pending")
+      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); // Sort by requestDate (newest first)
+    
+    // Combine pending and non-pending requests, with pending first
+    const sortedDonationRequests = [...pendingDonationRequests, ...nonPendingDonationRequests];
+    setDonationRequests(sortedDonationRequests.slice(0, 5)); // Only show the top 5 requests
+
+    // Fetch Currently Borrowed Books (No change needed for this part)
+    const borrowedRes = await axios.get(
+      "http://localhost:4000/api/borrows/borrowed",
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setBorrowedBooks(borrowedRes.data.slice(0, 10)); // Show 10 borrowed books
+  } catch (err) {
+    console.error("Error fetching admin data:", err);
+  }
+};
+
+
+
+  const handleAction = async (id, status, type) => {
     try {
-      const res = await axios.get("http://localhost:4000/api/borrows", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setRequests(res.data);
-    } catch (err) {
-      console.error("Error fetching requests:", err);
-    }
-  };
+      if (type === "borrow") {
+        // Handling Borrow Request (Approve/Reject)
+        await axios.patch(
+          `http://localhost:4000/api/borrows/update/${id}`,
+          { status },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        alert(`Borrow request ${status} successfully`);
+      } else if (type === "donation") {
+        // Handling Donation Request (Approve/Reject)
+        const actionUrl = `http://localhost:4000/api/donation-requests/${status.toLowerCase()}/${id}`;
+        const response = await axios.patch(actionUrl, {}, { headers: { Authorization: `Bearer ${token}` } });
+        alert(`Donation request ${status} successfully`);
 
-  const fetchBorrowedBooks = async () => {
-    try {
-      const res = await axios.get("http://localhost:4000/api/borrows/borrowed", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setBorrowedBooks(res.data);
-    } catch (err) {
-      console.error("Error fetching borrowed books:", err);
-    }
-  };
-
-  const handleAction = async (id, status) => {
-    try {
-      await axios.patch(
-        `http://localhost:4000/api/borrows/update/${id}`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      fetchRequests();
-      fetchBorrowedBooks();
-      alert(`Request ${status} successfully`);
+        // After the action, refresh the state to reflect the updated status
+        fetchData(); // Re-fetch the donation requests to update the UI
+      }
     } catch (err) {
       console.error("Error updating request:", err);
       alert(err.response?.data?.message || "Error updating request");
     }
   };
+
 
   const handleReturn = async (borrowId) => {
     try {
@@ -65,7 +103,7 @@ const AdminDashboard = () => {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      fetchBorrowedBooks();
+      fetchData();
       alert("Book returned successfully");
     } catch (err) {
       console.error("Error returning book:", err);
@@ -85,10 +123,20 @@ const AdminDashboard = () => {
               <strong>{r.userId?.name}</strong> requested <em>{r.bookId?.title}</em> - Status: {r.status}
             </p>
             {r.status === "pending" && r.bookId?.status !== "borrowed" && (
-              <>
-                <button onClick={() => handleAction(r._id, "approved")}>Approve</button>
-                <button onClick={() => handleAction(r._id, "rejected")}>Reject</button>
-              </>
+              <div className="request-actions">
+                <button
+                  className="approve-btn"
+                  onClick={() => handleAction(r._id, "approved", "borrow")}
+                >
+                  Approve
+                </button>
+                <button
+                  className="reject-btn"
+                  onClick={() => handleAction(r._id, "rejected", "borrow")}
+                >
+                  Reject
+                </button>
+              </div>
             )}
             {r.status === "pending" && r.bookId?.status === "borrowed" && (
               <p style={{ color: "red" }}>Book already borrowed</p>
@@ -96,8 +144,52 @@ const AdminDashboard = () => {
           </div>
         ))
       )}
+      {requests.length === 5 && (
+        <button className="view-more-btn" onClick={() => navigate("/borrow-requests")}>
+          View More Borrow Requests
+        </button>
+      )}
 
-      <h2>Borrowed Books</h2>
+      <h2>Donation Requests</h2>
+      {donationRequests.length === 0 ? (
+        <p>No pending donation requests.</p>
+      ) : (
+        donationRequests.map((d) => (
+          <div key={d._id} className="request-card">
+            <p>
+              <strong>{d.donor?.name}</strong> wants to donate <em>{d.title}</em> - Status: {d.status}
+            </p>
+            {d.status === "pending" && (
+              <div className="request-actions">
+                <button
+                  className="approve-btn"
+                  onClick={() => handleAction(d._id, "approved", "donation")}
+                >
+                  Approve
+                </button>
+                <button
+                  className="reject-btn"
+                  onClick={() => handleAction(d._id, "rejected", "donation")}
+                >
+                  Reject
+                </button>
+              </div>
+            )}
+            {d.status !== "pending" && (
+              <p style={{ color: d.status === "approved" ? "green" : "red" }}>
+                {d.status.charAt(0).toUpperCase() + d.status.slice(1)}
+              </p>
+            )}
+          </div>
+        ))
+      )}
+      {donationRequests.length === 5 && (
+        <button className="view-more-btn" onClick={() => navigate("/donation-requests")}>
+          View More Donation Requests
+        </button>
+      )}
+
+      <h2>Currently Borrowed Books</h2>
       {borrowedBooks.length === 0 ? (
         <p>No books currently borrowed.</p>
       ) : (
@@ -106,9 +198,16 @@ const AdminDashboard = () => {
             <p>
               <strong>{b.borrower?.name}</strong> borrowed <em>{b.book?.title}</em>
             </p>
-            <button onClick={() => handleReturn(b._id)}>Mark as Returned</button>
+            <button className="approve-btn" onClick={() => handleReturn(b._id)}>
+              Mark as Returned
+            </button>
           </div>
         ))
+      )}
+      {borrowedBooks.length === 10 && (
+        <button className="view-more-btn" onClick={() => navigate("/borrowed-books")}>
+          View More Borrowed Books
+        </button>
       )}
     </div>
   );

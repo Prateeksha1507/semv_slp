@@ -20,7 +20,6 @@ export function authMiddleware(req, res, next) {
 // ✅ Admin-only access middleware
 export async function adminMiddleware(req, res, next) {
   try {
-    console.log("Admin middleware req.user:", req.user); // 🔍
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
     const user = await Member.findById(req.user.id);
