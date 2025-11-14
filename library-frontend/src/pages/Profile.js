@@ -29,8 +29,15 @@ const Profile = () => {
     .then((res) => setUser(res.data)) // Set the user state
     .catch(() => setError("Failed to load user info"));
 
-  // Fetch borrow and donation history
-  // (same code for fetching borrows and donations)
+  axios
+    .get(`http://localhost:4000/api/members/${id}/borrows`, config)
+    .then((res) => setBorrows(res.data))
+    .catch(() => console.error("Error fetching borrows"));
+
+  axios
+    .get(`http://localhost:4000/api/members/${id}/donations`, config)
+    .then((res) => setDonations(res.data))
+    .catch(() => console.error("Error fetching donations"));
 }, []);
 
 
@@ -81,6 +88,7 @@ const Profile = () => {
     // Close the editing form
     setIsEditing(false); 
     setError(null);
+    window.location.reload()
   } catch (err) {
     setError("Failed to update profile");
   }

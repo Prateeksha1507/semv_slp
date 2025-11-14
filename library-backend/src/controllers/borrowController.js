@@ -97,6 +97,7 @@ export const getBorrowedBooks = async (req, res) => {
       .populate("book", "title author status")
       .populate("borrower", "name email");
     res.json(borrowed);
+    
   } catch (err) {
     console.error("Error fetching borrowed books:", err);
     res.status(500).json({ message: "Server error", error: err.message });
