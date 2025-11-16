@@ -7,7 +7,6 @@ dotenv.config();
 
 await mongoose.connect(process.env.MONGO_URI);
 
-// hash correctly
 const hashedPassword = await bcrypt.hash("admin123", 10);
 
 await Member.updateOne(
