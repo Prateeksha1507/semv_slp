@@ -15,19 +15,26 @@ const Books = () => {
   }, [search]);
 
   const fetchBooks = async () => {
-    try {
-      const token = getToken()
-      const res = await axios.get("http://localhost:4000/api/books", {
-        headers: { Authorization: `Bearer ${token}` },
-        params: search ? { search } : {},
-      });
-      setBooks(res.data);
-    } catch (err) {
-      console.error("Error fetching books:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const token = getToken();
+
+    const url = search.trim()
+      ? "http://localhost:4000/api/books/search"
+      : "http://localhost:4000/api/books";
+
+    const res = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: search ? { search } : {},
+    });
+
+    setBooks(res.data);
+  } catch (err) {
+    console.error("Error fetching books:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (loading) return <p className="loading-text">Loading books...</p>;
 

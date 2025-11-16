@@ -35,7 +35,7 @@ export const memberController = {
           name: member.name,
           email: member.email,
           phone: member.phone,
-          role: member.role, // ✅ Include this
+          role: member.role, 
         },
       });
     } catch (e) {

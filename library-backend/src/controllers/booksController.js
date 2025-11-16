@@ -116,7 +116,31 @@ export const booksController = {
     }
   },
 
-  // Delete a book
+  // Search books by title, author, description, or genre
+  async searchBooks(req, res) {
+    try {
+      const query = req.query.search || "";
+
+      if (!query) {
+        return res.status(400).json({ message: "Search query required" });
+      }
+
+      const books = await Book.find({
+        $or: [
+          { title: { $regex: query, $options: "i" } },
+          { author: { $regex: query, $options: "i" } },
+          { description: { $regex: query, $options: "i" } },
+          { genres: { $regex: query, $options: "i" } },
+        ],
+      });
+
+      res.json(books);
+    } catch (e) {
+      console.error("Error searching books:", e);
+      res.status(500).json({ message: e.message });
+    }
+  },
+
   async deleteBook(req, res) {
     try {
       const { bookId } = req.params;

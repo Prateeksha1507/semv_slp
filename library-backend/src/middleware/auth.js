@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import Member from "../models/Member.js";
 
-// ✅ Common user authentication
 export function authMiddleware(req, res, next) {
   const header = req.headers.authorization || "";
   const token = header.startsWith("Bearer ") ? header.split(" ")[1] : null;
@@ -17,7 +16,6 @@ export function authMiddleware(req, res, next) {
   }
 }
 
-// ✅ Admin-only access middleware
 export async function adminMiddleware(req, res, next) {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
