@@ -26,43 +26,37 @@ const fetchData = async () => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    // Separate the requests into pending and non-pending
     const pendingBorrowRequests = borrowRes.data
       .filter((r) => r.status === "pending")
-      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); // Sort by requestDate (newest first)
+      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); 
     
     const nonPendingBorrowRequests = borrowRes.data
       .filter((r) => r.status !== "pending")
-      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); // Sort by requestDate (newest first)
+      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); 
     
-    // Combine pending and non-pending requests, with pending first
     const sortedBorrowRequests = [...pendingBorrowRequests, ...nonPendingBorrowRequests];
-    setRequests(sortedBorrowRequests.slice(0, 5)); // Only show the top 5 requests
+    setRequests(sortedBorrowRequests.slice(0, 5)); 
 
-    // Fetch Donation Requests
     const donationRes = await axios.get("http://localhost:4000/api/donation-requests", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    // Separate the requests into pending and non-pending
     const pendingDonationRequests = donationRes.data
       .filter((d) => d.status === "pending")
-      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); // Sort by requestDate (newest first)
+      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); 
     
     const nonPendingDonationRequests = donationRes.data
       .filter((d) => d.status !== "pending")
-      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); // Sort by requestDate (newest first)
+      .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate)); 
     
-    // Combine pending and non-pending requests, with pending first
     const sortedDonationRequests = [...pendingDonationRequests, ...nonPendingDonationRequests];
-    setDonationRequests(sortedDonationRequests.slice(0, 5)); // Only show the top 5 requests
+    setDonationRequests(sortedDonationRequests.slice(0, 5));
 
-    // Fetch Currently Borrowed Books (No change needed for this part)
     const borrowedRes = await axios.get(
       "http://localhost:4000/api/borrows/borrowed",
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    setBorrowedBooks(borrowedRes.data.slice(0, 10)); // Show 10 borrowed books
+    setBorrowedBooks(borrowedRes.data.slice(0, 10)); 
   } catch (err) {
     console.error("Error fetching admin data:", err);
   }
@@ -73,21 +67,19 @@ const fetchData = async () => {
   const handleAction = async (id, status, type) => {
     try {
       if (type === "borrow") {
-        // Handling Borrow Request (Approve/Reject)
         await axios.patch(
           `http://localhost:4000/api/borrows/update/${id}`,
           { status },
           { headers: { Authorization: `Bearer ${token}` } }
         );
         alert(`Borrow request ${status} successfully`);
+        fetchData();
+        
       } else if (type === "donation") {
-        // Handling Donation Request (Approve/Reject)
         const actionUrl = `http://localhost:4000/api/donation-requests/${status.toLowerCase()}/${id}`;
         const response = await axios.patch(actionUrl, {}, { headers: { Authorization: `Bearer ${token}` } });
         alert(`Donation request ${status} successfully`);
-
-        // After the action, refresh the state to reflect the updated status
-        fetchData(); // Re-fetch the donation requests to update the UI
+        fetchData(); 
       }
     } catch (err) {
       console.error("Error updating request:", err);

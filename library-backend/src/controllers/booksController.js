@@ -4,7 +4,6 @@ import Donate from "../models/Donate.js";
 import Member from "../models/Member.js";
 
 export const booksController = {
-  // Add book - Logic based on user role
   async addBook(req, res) {
     try {
       const { title, author, genres, description, coverImage } = req.body;
@@ -18,7 +17,6 @@ export const booksController = {
       const donor = await Member.findById(donorId);
       if (!donor) return res.status(404).json({ message: "Member not found" });
 
-      // If the user is a member (donor), they should send a request instead of directly adding the book
       if (donor.role === "member") {
         const existingRequest = await DonationRequest.findOne({ donor: donorId, title, author, status: "pending" });
         if (existingRequest) {
@@ -41,7 +39,6 @@ export const booksController = {
         });
       }
 
-      // If the user is an admin, directly add the book to the database
       const book = await Book.create({
         coverImage: coverImage || null,
         title,
@@ -70,17 +67,14 @@ export const booksController = {
     }
   },
 
-  // Get all books
   async getAllBooks(req, res) {
     try {
-      const books = await Book.find();  // Fetch all books from the database
+      const books = await Book.find();  
       res.json(books);
     } catch (e) {
       res.status(500).json({ message: e.message });
     }
   },
-
-  // Get a specific book by its ID
   async getBookById(req, res) {
     try {
       const { bookId } = req.params;
@@ -94,7 +88,6 @@ export const booksController = {
     }
   },
 
-  // Update book details
   async updateBook(req, res) {
     try {
       const { bookId } = req.params;
@@ -103,7 +96,7 @@ export const booksController = {
       const updatedBook = await Book.findByIdAndUpdate(
         bookId,
         { title, author, genres, description, coverImage },
-        { new: true } // This will return the updated book
+        { new: true } 
       );
 
       if (!updatedBook) {
@@ -116,7 +109,6 @@ export const booksController = {
     }
   },
 
-  // Search books by title, author, description, or genre
   async searchBooks(req, res) {
     try {
       const query = req.query.search || "";
@@ -150,7 +142,6 @@ export const booksController = {
         return res.status(404).json({ message: "Book not found" });
       }
 
-      // Optionally, delete any donations associated with this book
       await Donate.deleteMany({ book: bookId });
 
       res.json({ message: `Book "${deletedBook.title}" deleted successfully` });
@@ -159,7 +150,6 @@ export const booksController = {
     }
   },
 
-  // Get issue history of a book (who borrowed it)
   async getIssueHistory(req, res) {
     try {
       const { bookId } = req.params;
@@ -169,7 +159,6 @@ export const booksController = {
         return res.status(404).json({ message: "Book not found" });
       }
 
-      // Assuming "borrowHistory" is tracked in the Book model or in a related collection
       const issues = await Donate.find({ book: bookId }).populate("donor", "name email");
 
       res.json(issues);

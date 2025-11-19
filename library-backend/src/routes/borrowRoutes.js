@@ -5,15 +5,15 @@ import {
   getAllBorrowRequests,
   getBorrowedBooks,
   returnBorrowedBook,
+  checkBorrowRequest,
 } from "../controllers/borrowController.js";
 import { authMiddleware, adminMiddleware } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// User routes
 router.post("/request/:bookId", authMiddleware, requestBorrow);
+router.get("/check/:bookId", authMiddleware, checkBorrowRequest);
 
-// Admin routes
 router.get("/", authMiddleware, adminMiddleware, getAllBorrowRequests);
 router.get("/borrowed", authMiddleware, adminMiddleware, getBorrowedBooks); // new route
 router.patch("/update/:requestId", authMiddleware, adminMiddleware, updateBorrowStatus);

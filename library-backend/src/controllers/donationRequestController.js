@@ -4,15 +4,12 @@ import Donate from "../models/Donate.js";
 import Member from "../models/Member.js";
 
 export const donationRequestController = {
-    // Fetch all pending/approved/rejected donation requests
     async getAllDonationRequests(req, res) {
         try {
-            // Fetch all donation requests
             const donationRequests = await DonationRequest.find()
                 .populate("donor", "name email")
                 .sort({ createdAt: -1 });
 
-            // Manually fetch book data and attach it to the donation requests
             const donationRequestsWithBook = await Promise.all(
                 donationRequests.map(async (request) => {
                     const book = await Book.findOne({
@@ -20,14 +17,13 @@ export const donationRequestController = {
                         author: request.author,
                     });
 
-                    // Attach book data to the request object
-                    request.book = book; // Add the book details to the request object
+                    request.book = book; 
 
                     return request;
                 })
             );
 
-            res.json(donationRequestsWithBook); // Return the updated donation requests with book data
+            res.json(donationRequestsWithBook); 
         } catch (err) {
             res.status(500).json({ message: err.message });
         }
@@ -48,11 +44,9 @@ export const donationRequestController = {
                 return res.status(404).json({ message: "Donation request not found" });
             }
 
-            // Update the donation request status
             request.status = status;
             await request.save();
 
-            // If approved, handle the donation process (e.g., create a new book entry)
             if (status === "approved") {
                 const newBook = await Book.create({
                     title: request.title,
@@ -72,7 +66,7 @@ export const donationRequestController = {
 
             res.status(200).json({
                 message: `Donation request ${status} successfully`,
-                request, // Return the updated request
+                request, 
             });
         } catch (err) {
             console.error("Error updating donation request:", err);

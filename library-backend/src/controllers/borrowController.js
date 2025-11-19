@@ -2,7 +2,7 @@ import BorrowRequest from "../models/BorrowRequest.js";
 import Book from "../models/Book.js";
 import Borrow from "../models/Borrow.js";
 
-// ✅ User sends borrow request
+
 export const requestBorrow = async (req, res) => {
   try {
     const { bookId } = req.params;
@@ -28,7 +28,24 @@ export const requestBorrow = async (req, res) => {
   }
 };
 
-// ✅ Admin approves or rejects a request
+export const checkBorrowRequest = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { bookId } = req.params;
+
+    const existing = await BorrowRequest.findOne({
+      userId,
+      bookId,
+      status: "pending",
+    });
+
+    res.json({ requested: !!existing });
+  } catch (err) {
+    console.error("Error checking request:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 export const updateBorrowStatus = async (req, res) => {
   try {
     const { requestId } = req.params;
@@ -46,12 +63,10 @@ export const updateBorrowStatus = async (req, res) => {
       request.status = "approved";
       request.approvalDate = new Date();
 
-      // Update book status
       request.bookId.status = "borrowed";
       request.bookId.currentHolderId = request.userId;
       await request.bookId.save();
 
-      // Create Borrow record
       await Borrow.create({
         borrower: request.userId,
         book: request.bookId._id,
@@ -59,7 +74,6 @@ export const updateBorrowStatus = async (req, res) => {
         status: "borrowed",
       });
 
-      // Reject other pending requests for same book
       await BorrowRequest.updateMany(
         { bookId: request.bookId._id, status: "pending", _id: { $ne: request._id } },
         { status: "rejected" }
@@ -77,7 +91,6 @@ export const updateBorrowStatus = async (req, res) => {
   }
 };
 
-// ✅ Admin fetches all borrow requests
 export const getAllBorrowRequests = async (req, res) => {
   try {
     const requests = await BorrowRequest.find()
@@ -90,7 +103,6 @@ export const getAllBorrowRequests = async (req, res) => {
   }
 };
 
-// Get all borrowed books
 export const getBorrowedBooks = async (req, res) => {
   try {
     const borrowed = await Borrow.find({ status: "borrowed" })
@@ -104,7 +116,6 @@ export const getBorrowedBooks = async (req, res) => {
   }
 };
 
-// Return a borrowed book
 export const returnBorrowedBook = async (req, res) => {
   try {
     const { borrowId } = req.params;
@@ -116,7 +127,6 @@ export const returnBorrowedBook = async (req, res) => {
     borrow.returnDate = new Date();
     await borrow.save();
 
-    // Update book status to available
     borrow.book.status = "available";
     borrow.book.currentHolderId = null;
     await borrow.book.save();

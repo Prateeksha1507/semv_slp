@@ -51,11 +51,10 @@ const AddBook = () => {
     try {
       let imageUrl = "";
 
-      // ✅ Upload to Cloudinary first if image selected
       if (coverImage) {
         const formData = new FormData();
         formData.append("file", coverImage);
-        formData.append("upload_preset", "book_cover"); // replace with your Cloudinary preset
+        formData.append("upload_preset", "book_cover"); 
 
         const cloudRes = await axios.post(
           `https://api.cloudinary.com/v1_1/dtk12thvk/image/upload`,
@@ -64,8 +63,6 @@ const AddBook = () => {
 
         imageUrl = cloudRes.data.secure_url;
       }
-
-      // ✅ Now send book details to backend
       const res = await axios.post(
         "http://localhost:4000/api/books",
         {
@@ -76,7 +73,7 @@ const AddBook = () => {
             : [],
           description: book.description,
           donorName,
-          coverImage: imageUrl, // 👈 store image URL
+          coverImage: imageUrl, 
         },
         {
           headers: {
@@ -85,12 +82,12 @@ const AddBook = () => {
         }
       );
 
-      setMessage(res.data.message || "Book donated successfully ✅");
+      setMessage(res.data.message || "Book donated successfully ");
       setBook({ title: "", author: "", genres: "", description: "" });
       setCoverImage(null);
     } catch (err) {
       console.error("Error donating book:", err);
-      setMessage(err.response?.data?.message || "Failed to donate book ❌");
+      setMessage(err.response?.data?.message || "Failed to donate book ");
     } finally {
       setLoading(false);
     }

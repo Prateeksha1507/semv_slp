@@ -9,7 +9,6 @@ import memberRoutes from "./routes/memberRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
 import donateRoutes from "./routes/donateRoutes.js";
 import borrowRoutes from "./routes/borrowRoutes.js";
-import volunteerRoutes from "./routes/volunteerRoutes.js";
 import donationRequestRoutes from "./routes/donationRequestRoutes.js"; 
 
 
@@ -24,7 +23,6 @@ app.use("/api/books", bookRoutes);
 app.use("/api/donations", donateRoutes);
 app.use("/api/borrows", borrowRoutes);
 
-app.use("/api/volunteer", volunteerRoutes);
 
 app.use("/api/donation-requests", donationRequestRoutes); 
 

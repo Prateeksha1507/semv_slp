@@ -20,7 +20,7 @@
 
 .book-cover-div {
   width: 100%;
-  height: 200px;
+  height: 250px;
   margin: 0;
   padding: 0;
 }
@@ -59,7 +59,7 @@ h2 {
 
 .book-card img {
   width: 100%;
-  height: 180px;
+  height: 250px;
   object-fit: cover;
   border-radius: 8px;
 }

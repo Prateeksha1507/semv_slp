@@ -8,7 +8,7 @@ function signToken(member) {
     {
       id: member._id,
       email: member.email,
-      role: member.role, // ✅ Include role in JWT
+      role: member.role, 
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
@@ -90,18 +90,17 @@ export const memberController = {
 
     await member.save();
 
-    // Reissue the token to include updated information
     const token = signToken(member);
 
     res.json({
       message: "Member updated",
-      token, // Send updated token
+      token, 
       user: {
         id: member._id,
         name: member.name,
         email: member.email,
         phone: member.phone,
-        role: member.role, // Include this
+        role: member.role,
       },
     });
   } catch (e) {
