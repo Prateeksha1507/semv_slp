@@ -94,7 +94,7 @@ export const updateBorrowStatus = async (req, res) => {
 export const getAllBorrowRequests = async (req, res) => {
   try {
     const requests = await BorrowRequest.find()
-      .populate("userId", "name email")
+      .populate("userId", "name email phone")
       .populate("bookId", "title author status");
     res.json(requests);
   } catch (err) {
@@ -107,7 +107,7 @@ export const getBorrowedBooks = async (req, res) => {
   try {
     const borrowed = await Borrow.find({ status: "borrowed" })
       .populate("book", "title author status")
-      .populate("borrower", "name email");
+      .populate("borrower", "name phone email");
     res.json(borrowed);
     
   } catch (err) {

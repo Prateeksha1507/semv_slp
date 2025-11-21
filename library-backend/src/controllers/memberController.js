@@ -28,6 +28,7 @@ export const memberController = {
       const member = await Member.create({ name, email, password, phone });
       const token = signToken(member);
       res.status(201).json({
+        success: true,  
         message: "Signup successful",
         token,
         user: {

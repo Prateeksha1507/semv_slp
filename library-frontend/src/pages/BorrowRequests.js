@@ -44,7 +44,7 @@ const BorrowRequests = () => {
               <h3 className="card-title">{r.bookId?.title}</h3>
 
               <p className="card-line">
-                <strong>{r.userId?.name}</strong> requested <em>{r.bookId?.title}</em>
+                <strong>{r.userId?.name}</strong>({r.userId?.phone}) requested <em>{r.bookId?.title}</em>
               </p>
 
               {r.status === "pending" ? (

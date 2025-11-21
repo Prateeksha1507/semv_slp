@@ -7,7 +7,7 @@ export const donationRequestController = {
     async getAllDonationRequests(req, res) {
         try {
             const donationRequests = await DonationRequest.find()
-                .populate("donor", "name email")
+                .populate("donor", "name email phone")
                 .sort({ createdAt: -1 });
 
             const donationRequestsWithBook = await Promise.all(

@@ -17,7 +17,6 @@ import Logout from "./pages/Logout";
 import AddBook from "./pages/AddBook";
 import BookDetails from "./pages/BookDetails";
 import Profile from "./pages/Profile";
-import VolunteerForm from "./pages/VolunteerForm";
 import AdminDashboard from "./pages/AdminDashboard";
 import BorrowRequests from "./pages/BorrowRequests";
 import DonationRequests from "./pages/DonationRequests";
@@ -38,8 +37,6 @@ function App() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
-
-        <Route path="/volunteer" element={<VolunteerForm />} />
 
         {/* Protected Pages */}
         <Route

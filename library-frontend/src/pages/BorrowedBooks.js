@@ -58,8 +58,11 @@ const BorrowedBooks = () => {
               <h3 className="card-title">{b.book?.title}</h3>
 
               <p className="card-line">
-                <strong>{b.borrower?.name}</strong> borrowed{" "}
+                <strong>{b.borrower?.name}</strong>({b.borrower?.phone}) borrowed{" "}
                 <em>{b.book?.title}</em>
+              </p>
+              <p className="card-line">
+                Borrowed on: {new Date(b.borrowDate).toLocaleString()}
               </p>
 
               <div className="request-actions">

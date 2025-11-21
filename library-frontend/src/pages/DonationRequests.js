@@ -43,36 +43,40 @@ const DonationRequests = () => {
             <div key={d._id} className="view-card">
               <h3 className="card-title">{d.title}</h3>
 
-              <p className="card-line">
+              {/* <p className="card-line">
                 <strong>{d.donor?.name}</strong> wants to donate <em>{d.title}</em>
+              </p> */}
+              <p className="card-line">
+                <strong>{d.donor?.name}</strong> ({d.donor?.phone})
+                wants to donate <em>{d.title}</em>
               </p>
 
               {d.status === "pending" ? (
-  <button
-    className="approve-btn"
-    onClick={async () => {
-      try {
-        await axios.patch(
-          `http://localhost:4000/api/donation-requests/approved/${d._id}`,
-          {},
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+                <button
+                  className="approve-btn"
+                  onClick={async () => {
+                    try {
+                      await axios.patch(
+                        `http://localhost:4000/api/donation-requests/approved/${d._id}`,
+                        {},
+                        { headers: { Authorization: `Bearer ${token}` } }
+                      );
 
-        setRequests((prev) =>
-          prev.map((item) =>
-            item._id === d._id ? { ...item, status: "approved" } : item
-          )
-        );
-      } catch (err) {
-        console.error("Error approving donation:", err);
-      }
-    }}
-  >
-    Approve
-  </button>
-) : (
-  <span className="status-approved">Approved</span>
-)}
+                      setRequests((prev) =>
+                        prev.map((item) =>
+                          item._id === d._id ? { ...item, status: "approved" } : item
+                        )
+                      );
+                    } catch (err) {
+                      console.error("Error approving donation:", err);
+                    }
+                  }}
+                >
+                  Approve
+                </button>
+              ) : (
+                <span className="status-approved">Approved</span>
+              )}
             </div>
           ))
         )}

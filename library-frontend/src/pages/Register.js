@@ -8,8 +8,10 @@ const Register = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
+
   });
 
   const navigate = useNavigate();
@@ -19,31 +21,36 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      showToast("Passwords do not match!","error");
-      return;
-    }
+  if (formData.password !== formData.confirmPassword) {
+    showToast("Passwords do not match!", "error");
+    return;
+  }
 
-    try {
-      const res = await axios.post("http://localhost:4000/api/members/signup", {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      });
+  try {
+    const res = await axios.post("http://localhost:4000/api/members/signup", {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      phone: formData.phone,
+    });
 
-      if (res.data && res.data.success) {
-        showToast("Account created successfully!");
+    if (res.data?.success) {
+      showToast("Account created successfully!");
+
+      setTimeout(() => {
         navigate("/login");
-      } else {
-        showToast(res.data.message || "Signup failed. Please try again.","error");
-      }
-    } catch (err) {
-      console.error("Error during signup:", err);
-      showToast(err.response?.data?.message || "Something went wrong!","error");
+      }, 1000); 
+    } else {
+      showToast(res.data.message || "Signup failed. Please try again.", "error");
     }
-  };
+  } catch (err) {
+    console.error("Error during signup:", err);
+    showToast(err.response?.data?.message || "Something went wrong!", "error");
+  }
+};
+
 
   return (
     <div className="register-page">
@@ -70,6 +77,16 @@ const Register = () => {
             onChange={handleChange}
             required
           />
+          <label>WhatsApp Number</label>
+          <input
+            type="text"
+            name="phone"
+            placeholder="Enter your WhatsApp Number"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+          />
+
 
           <label>Password</label>
           <input
