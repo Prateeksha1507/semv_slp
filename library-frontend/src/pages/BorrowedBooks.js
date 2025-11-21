@@ -62,7 +62,10 @@ const BorrowedBooks = () => {
                 <em>{b.book?.title}</em>
               </p>
               <p className="card-line">
-                Borrowed on: {new Date(b.borrowDate).toLocaleString()}
+                Borrow Date: {new Date(b.borrowDate).toLocaleString()}
+              </p>
+              <p className="card-line">
+                Return Date: {new Date(b.returnDate).toLocaleString()}
               </p>
 
               <div className="request-actions">
