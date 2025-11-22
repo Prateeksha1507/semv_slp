@@ -14,7 +14,7 @@ const borrowSchema = new mongoose.Schema(
 
 borrowSchema.pre("save", function (next) {
   if (!this.returnDate) {
-    const twoWeeks =  60 * 60 * 1000;
+    const twoWeeks = 14 * 24 * 60 * 60 * 1000;
     this.returnDate = new Date(this.borrowDate.getTime() + twoWeeks);
   }
   next();

@@ -1,18 +1,9 @@
 import cron from "node-cron";
 import Borrow from "../models/Borrow.js";
-import nodemailer from "nodemailer";
+import transporter from "./nodemailer.js"; // reuse transporter
 
-// Email transport
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER, 
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-cron.schedule("* * * * *", async () => {
-  // Runs every day at 9 AM
+// Schedule daily at 9 AM
+cron.schedule("0 9 * * *", async () => {
   console.log("Checking for return reminders...");
 
   try {
@@ -25,10 +16,12 @@ cron.schedule("* * * * *", async () => {
     const borrows = await Borrow.find({
       returnDate: { $gte: start, $lte: end },
       status: "borrowed",
-      reminderSent: false
+      reminderSent: false,
     }).populate("borrower book");
 
     for (const b of borrows) {
+      if (!b.borrower.email) continue;
+
       const emailOptions = {
         from: process.env.EMAIL_USER,
         to: b.borrower.email,
@@ -39,7 +32,8 @@ This is a reminder that your borrowed book "${b.book.title}" is due tomorrow: ${
 
 Please return it on time.
 
-- Library Admin`
+Library Admin
+BHC`,
       };
 
       await transporter.sendMail(emailOptions);
