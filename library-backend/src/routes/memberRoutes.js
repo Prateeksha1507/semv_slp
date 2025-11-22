@@ -7,6 +7,8 @@ const router = Router();
 router.post("/signup", memberController.signup);
 router.post("/login", memberController.login);
 
+router.post("/verify-otp", memberController.verifyOtp);
+
 router.get("/", authMiddleware, memberController.getAllUsers);
 router.get("/:memberId", authMiddleware, memberController.getUserById);
 router.put("/:memberId", authMiddleware, memberController.update);

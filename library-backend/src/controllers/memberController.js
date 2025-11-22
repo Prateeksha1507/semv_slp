@@ -2,13 +2,15 @@ import jwt from "jsonwebtoken";
 import Member from "../models/Member.js";
 import Borrow from "../models/Borrow.js";
 import Donate from "../models/Donate.js";
+import transporter from "../jobs/nodemailer.js";
+import Otp from "../models/Otp.js";
 
 function signToken(member) {
   return jwt.sign(
     {
       id: member._id,
       email: member.email,
-      role: member.role, 
+      role: member.role,
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
@@ -16,27 +18,87 @@ function signToken(member) {
 }
 
 export const memberController = {
-  async signup(req, res) {
+  // memberController.js
+
+async signup(req, res) {
+  try {
+    const { name, email, password, phone } = req.body;
+    
+    const exists = await Member.findOne({ email });
+    if (exists) return res.status(409).json({ message: "Email already registered" });
+
+    // generate OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiry
+
+    await Otp.findOneAndUpdate(
+      { email },
+      { otp: otpCode, expiresAt },
+      { upsert: true }
+    );
+
+    // send OTP
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Verify your email",
+      text: `Your OTP is: ${otpCode}. It expires in 10 minutes.`
+    });
+
+    res.json({ success: true, message: "OTP sent to email" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+},
+  async verifyOtp(req, res) {
+  try {
+    const { name, email, password, phone, otp } = req.body;
+
+    const record = await Otp.findOne({ email });
+    if (!record) return res.status(400).json({ message: "OTP not found" });
+
+    if (record.otp !== otp || record.expiresAt < new Date()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // Create the member
+    const member = await Member.create({ name, email, password, phone });
+    
+    // delete OTP record
+    await Otp.deleteOne({ email });
+
+    res.json({ success: true, message: "Signup successful" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+},
+
+
+  async login(req, res) {
     try {
-      const { name, email, password, phone } = req.body;
-      if (!name || !email || !password)
-        return res.status(400).json({ message: "name, email, password are required" });
+      const { email, password } = req.body;
+      const member = await Member.findOne({ email });
+      if (!member) return res.status(401).json({ message: "Invalid credentials" });
 
-      const exists = await Member.findOne({ email });
-      if (exists) return res.status(409).json({ message: "Email already registered" });
+      console.log("Found member:", member.email, "Role:", member.role);
 
-      const member = await Member.create({ name, email, password, phone });
+      const ok = await member.comparePassword(password);
+      console.log(password)
+      console.log(member.password)
+      console.log("Password match:", ok);
+
+      if (!ok) return res.status(401).json({ message: "Invalid credentials" });
+
       const token = signToken(member);
-      res.status(201).json({
-        success: true,  
-        message: "Signup successful",
+      res.json({
+        message: "Login successful",
         token,
         user: {
           id: member._id,
           name: member.name,
           email: member.email,
           phone: member.phone,
-          role: member.role, 
+          role: member.role,
         },
       });
     } catch (e) {
@@ -44,71 +106,39 @@ export const memberController = {
     }
   },
 
-  async login(req, res) {
-  try {
-    const { email, password } = req.body;
-    const member = await Member.findOne({ email });
-    if (!member) return res.status(401).json({ message: "Invalid credentials" });
-
-    console.log("Found member:", member.email, "Role:", member.role);
-
-    const ok = await member.comparePassword(password);
-    console.log(password)
-    console.log(member.password)
-    console.log("Password match:", ok);
-
-    if (!ok) return res.status(401).json({ message: "Invalid credentials" });
-
-    const token = signToken(member);
-    res.json({
-      message: "Login successful",
-      token,
-      user: {
-        id: member._id,
-        name: member.name,
-        email: member.email,
-        phone: member.phone,
-        role: member.role,
-      },
-    });
-  } catch (e) {
-    res.status(500).json({ message: e.message });
-  }
-},
-
   async update(req, res) {
-  try {
-    const { memberId } = req.params;
-    const { name, email, password, phone } = req.body;
+    try {
+      const { memberId } = req.params;
+      const { name, email, password, phone } = req.body;
 
-    const member = await Member.findById(memberId);
-    if (!member) return res.status(404).json({ message: "Member not found" });
+      const member = await Member.findById(memberId);
+      if (!member) return res.status(404).json({ message: "Member not found" });
 
-    if (name !== undefined) member.name = name;
-    if (email !== undefined) member.email = email;
-    if (phone !== undefined) member.phone = phone;
-    if (password) member.password = password;
+      if (name !== undefined) member.name = name;
+      if (email !== undefined) member.email = email;
+      if (phone !== undefined) member.phone = phone;
+      if (password) member.password = password;
 
-    await member.save();
+      await member.save();
 
-    const token = signToken(member);
+      const token = signToken(member);
 
-    res.json({
-      message: "Member updated",
-      token, 
-      user: {
-        id: member._id,
-        name: member.name,
-        email: member.email,
-        phone: member.phone,
-        role: member.role,
-      },
-    });
-  } catch (e) {
-    if (e.code === 11000) return res.status(409).json({ message: "Email already in use" });
-    res.status(500).json({ message: e.message });
-  }
-},
+      res.json({
+        message: "Member updated",
+        token,
+        user: {
+          id: member._id,
+          name: member.name,
+          email: member.email,
+          phone: member.phone,
+          role: member.role,
+        },
+      });
+    } catch (e) {
+      if (e.code === 11000) return res.status(409).json({ message: "Email already in use" });
+      res.status(500).json({ message: e.message });
+    }
+  },
 
 
   async remove(req, res) {
