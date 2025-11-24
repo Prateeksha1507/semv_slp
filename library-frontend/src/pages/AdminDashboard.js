@@ -3,6 +3,7 @@ import axios from "axios";
 import { getToken, getUser } from "../api";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
+import { showToast } from "../components/Toast";
 
 const AdminDashboard = () => {
   const [requests, setRequests] = useState([]);
@@ -72,18 +73,18 @@ const fetchData = async () => {
           { status },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        alert(`Borrow request ${status} successfully`);
+        showToast(`Borrow request ${status} successfully`);
         fetchData();
         
       } else if (type === "donation") {
         const actionUrl = `http://localhost:4000/api/donation-requests/${status.toLowerCase()}/${id}`;
         const response = await axios.patch(actionUrl, {}, { headers: { Authorization: `Bearer ${token}` } });
-        alert(`Donation request ${status} successfully`);
+        showToast(`Donation request ${status} successfully`);
         fetchData(); 
       }
     } catch (err) {
       console.error("Error updating request:", err);
-      alert(err.response?.data?.message || "Error updating request");
+      showToast(err.response?.data?.message || "Error updating request","error");
     }
   };
 
@@ -96,10 +97,10 @@ const fetchData = async () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchData();
-      alert("Book returned successfully");
+      showToast("Book returned successfully");
     } catch (err) {
       console.error("Error returning book:", err);
-      alert(err.response?.data?.message || "Error returning book");
+      showToast(err.response?.data?.message || "Error returning book","error");
     }
   };
 

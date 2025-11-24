@@ -57,14 +57,14 @@ const BookDetails = () => {
             setError("Book not found (404). Either the book doesn't exist or the ID is wrong.");
           } else if (err.response.status === 401 || err.response.status === 403) {
             setError("Unauthorized. Please login and try again.");
-            
+
           } else {
             setError(err.response.data?.message || "Server returned an error.");
           }
         } else if (err.request) {
           setError("No response from server. Is backend running and accessible at http://localhost:4000?");
         } else {
-          
+
           setError("Error: " + (err.message || "Unknown error"));
         }
       } finally {
@@ -83,11 +83,12 @@ const BookDetails = () => {
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
 
-      alert(res.data.message);
+      showToast(res.data.message, "success");
       navigate("/books", { state: { refresh: true } });
+
     } catch (err) {
       console.error("Borrow error:", err);
-      alert(err.response?.data?.message || "Error requesting book");
+      showToast(err.response?.data?.message || "Error requesting book","error");
     }
   };
 
@@ -110,7 +111,7 @@ const BookDetails = () => {
 
   const userRole = (() => {
     try {
-      const userRaw = getUser(); 
+      const userRaw = getUser();
       if (userRaw) return JSON.parse(userRaw).role;
     } catch (e) { }
     return null;
