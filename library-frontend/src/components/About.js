@@ -33,16 +33,15 @@ const About = () => (
   <div className="about-container">
     <h1>About Book in Hand Campaign</h1>
     <p>
-      The Book in Hand Campaign is a heartfelt initiative by the NGO Cell Foundation,
-      passionately dedicated to fostering a love for reading and providing access to quality books for everyone.
-      Through this campaign, we strive to bridge the literacy gap by making books readily available to underserved communities, schools, and individuals.
+      CELL Foundation is a not-for-profit organization founded by socially committed youth, working across diverse aspects of human development through creative, inclusive, and community-driven initiatives. Registered under the Indian Trusts Act in March 2023 and listed on the NITI Aayog's Darpan portal, the Foundation promotes grassroots movements led by people - especially the youth - to foster sustained and inclusive change.
     </p>
 
-    <h2>Our Vision</h2>
+    <h2>Introduction: Book in Hand Campaign</h2>
     <p>
-      We envision a world where every person has the opportunity to explore the world of books,
-      regardless of their background or circumstances.
-      We firmly believe that access to books is a fundamental right and a key to personal and societal growth.
+      The Book in Hand Campaign is a flagship initiative by CELL Foundation. It is a youth-led social initiative that has been running consistently since August 2023, commit committed to creating a community where every individual has the opportunity to learn and grow. </p>
+      
+      <p>The campaign operates Free Community Libraries across Delhi to ensure that books and knowledge are freely accessible to all without any barriers. Currently, there are six Free Community Libraries, including two dedicated to children from slum communitites.
+
     </p>
 
     <h2>History</h2>

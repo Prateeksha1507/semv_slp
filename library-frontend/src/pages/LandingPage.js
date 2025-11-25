@@ -52,9 +52,15 @@ const LandingPage = () => {
         </div>
         <div className="section-card purple">
           <h2>Our Impact</h2>
-          <p>
-            Hundreds of students have benefitted from free and affordable books. 
-            Community and volunteer efforts are driving real change.
+          <p><ul>
+           <li>6 Libraries operating in different corners of Delhi</li>
+           <li>More than 5,000 readers have become part of the libraries</li>
+           <li>Over 3000 books in active circulation</li>
+           <li>Weekly footfall of 300+ readers</li>
+           <li>20+ volunteers involved</li>
+           <li>Readers include children, students, senior citizens, migrants, and women from diverse backgrounds.</li>
+           <li>Promotion of grassroots authors and regional literature</li>
+           </ul>
           </p>
         </div>
         <div className="section-card blue">
@@ -65,6 +71,49 @@ const LandingPage = () => {
           </p>
         </div>
       </section>
+      {/* Additional Information Section */}
+<section className="library-info-section">
+  <h2 className="library-info-heading">Where You Can Find Us</h2>
+  <p className="library-info-text">
+    Our community libraries are currently set up at the following locations:
+  </p>
+  <ul className="library-info-list">
+    <li>📍 Central Library – Near Model Town</li>
+    <li>📍 Community Reading Room – Rohini Sector 5</li>
+    <li>📍 Learning Hub – Lajpat Nagar</li>
+    <li>📍 Children’s Library – Patel Nagar</li>
+  </ul>
+
+  <h2 className="library-info-heading">Alternate Book Submission Points</h2>
+  <p className="library-info-text">
+    If the main library is closed, members can safely return books at the following
+    designated drop-off points:
+  </p>
+  <ul className="library-info-list">
+    <li>
+      📍 Book Drop Box – Civil Lines  
+      <br />
+      <a href="https://maps.google.com" className="location-link">
+        View Location
+      </a>
+    </li>
+    <li>
+      📍 Community Center Gate – Ashok Vihar  
+      <br />
+      <a href="https://maps.google.com" className="location-link">
+        View Location
+      </a>
+    </li>
+    <li>
+      📍 Reading Corner – Karol Bagh  
+      <br />
+      <a href="https://maps.google.com" className="location-link">
+        View Location
+      </a>
+    </li>
+  </ul>
+</section>
+
     </div>
   );
 };

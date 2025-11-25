@@ -141,45 +141,6 @@ const fetchData = async () => {
         </button>
       </div>
 
-      {/* Donation Requests */}
-      <div className="section-card">
-        <h3>Donation Requests</h3>
-
-        {donationRequests.length === 0 ? (
-          <p className="empty-text">No donation requests</p>
-        ) : (
-          donationRequests.map((d) => (
-            <div key={d._id} className="item">
-              <span className="item-title">{d.title}</span>
-
-              {d.status === "pending" ? (
-                <div>
-                  <button
-                    className="action-btn approve-btn"
-                    onClick={() => handleAction(d._id, "approved", "donation")}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    className="action-btn reject-btn"
-                    onClick={() => handleAction(d._id, "rejected", "donation")}
-                  >
-                    Reject
-                  </button>
-                </div>
-              ) : (
-                <span className={`status-badge status-${d.status}`}>
-                  {d.status}
-                </span>
-              )}
-            </div>
-          ))
-        )}
-
-        <button className="view-more-btn" onClick={() => navigate("/donation-requests")}>
-          View More
-        </button>
-      </div>
 
       {/* Currently Borrowed */}
       <div className="section-card">
@@ -205,8 +166,24 @@ const fetchData = async () => {
           View More
         </button>
       </div>
-
     </div>
+   <div className="donation-row">
+  <div className="donation-tile">
+    <h3 style={{ margin: 0, fontSize: "17px" }}>Donation Requests</h3>
+
+    <p className="small-tile-text" style={{ marginLeft: "20px" }}>
+      Pending: <strong>{ donationRequests.filter(d => d.status === "pending").length }</strong>
+    </p>
+
+    <button
+      className="donation-small-btn"
+      onClick={() => navigate("/donation-requests")}
+    >
+      View More
+    </button>
+  </div>
+</div>
+
   </div>
 );
 };

@@ -32,11 +32,12 @@ const Contact = () => (
 
     <h3>Contact Info</h3>
     <ul>
-      <li><b>Email:</b> <a href="mailto:info@bookinhand.org">info@bookinhand.org</a></li>
-      <li><b>Phone:</b> +91 98765 43210</li>
+      <li><b>Email:</b> <a href="mailto:info@bookinhand.org">info@bookinhand.org</a> or <a href="bhcindiaofficiall@gmail.com">bhcindiaofficiall@gmail.com</a></li>
+      <li><b>Phone:</b> +91 98765 43210, 9870276690, 6306811794</li>
       <li><b>WhatsApp:</b> <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer">Chat with us</a></li>
       <li><b>Instagram:</b> <a href="https://instagram.com/bookinhand" target="_blank" rel="noopener noreferrer">@bookinhand</a></li>
       <li><b>Twitter:</b> <a href="https://twitter.com/bookinhand" target="_blank" rel="noopener noreferrer">@bookinhand</a></li>
+      <li><b>linkedIn:</b> <a href="https://www.linkedin.com/company/bhcindia/" target="_blank" rel="noopener noreferrer">bhcindia</a></li>
     </ul>
   </div>
 );
