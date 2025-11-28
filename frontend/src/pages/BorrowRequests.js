@@ -73,7 +73,7 @@ const BorrowRequests = () => {
                   onClick={async () => {
                     try {
                       await axios.patch(
-                        `http://localhost:4000/api/borrows/update/${r._id}`,
+                        `https://semv-slp.onrender.com/api/borrows/update/${r._id}`,
                         { status: "approved" },
                         { headers: { Authorization: `Bearer ${token}` } }
                       );

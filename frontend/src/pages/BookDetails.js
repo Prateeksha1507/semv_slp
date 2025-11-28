@@ -62,7 +62,7 @@ const BookDetails = () => {
             setError(err.response.data?.message || "Server returned an error.");
           }
         } else if (err.request) {
-          setError("No response from server. Is backend running and accessible at http://localhost:4000?");
+          setError("No response from server.");
         } else {
 
           setError("Error: " + (err.message || "Unknown error"));
@@ -78,7 +78,7 @@ const BookDetails = () => {
   const handleBorrow = async (bookId) => {
     try {
       const res = await axios.post(
-        `http://localhost:4000/api/borrows/request/${bookId}`,
+        `https://semv-slp.onrender.com/api/borrows/request/${bookId}`,
         {},
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
@@ -94,7 +94,7 @@ const BookDetails = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:4000/api/books/${bookId}`, {
+      await axios.delete(`https://semv-slp.onrender.com/api/books/${bookId}`, {
         headers: { Authorization: `Bearer ${getToken()}` },
       });
       showToast("Book deleted successfully", "success");
