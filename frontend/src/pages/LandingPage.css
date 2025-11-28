@@ -113,28 +113,31 @@ body, html {
 }
 
 .section-card {
-  flex: 1;
-  min-width: 240px;
-  max-width: 320px;
+  flex: 0 0 auto;   /* prevents stretching */
+  width: auto;      /* only as wide as content */
+  max-width: 320px; /* optional limit */
+  min-width: 220px; /* optional — keeps them neat */
   background: #24272c;
   color: #fff;
   border-radius: 17px;
   box-shadow: 0 8px 32px rgba(60, 117, 180, 0.13);
-  padding: 2rem 1.7rem;
+  padding: 1.5rem 1.4rem;
   margin-bottom: 2rem;
   text-align: left;
   transition: transform 0.18s;
   position: relative;
 }
 
+
 .section-card h2 {
   margin-bottom: 1rem;
-  font-size: 1.4rem;
+  font-size: 2rem;
   font-weight: 800;
   letter-spacing: 1px;
+  align-self: center;
 }
 
-.section-card p {
+.section-card ul,p {
   font-size: 1.07rem;
   line-height: 1.5;
   color: #161617;
@@ -151,6 +154,7 @@ body, html {
 .section-card.blue {
   background: #4ccaff;
   color: #194463;
+  height: auto;
 }
 
 .section-card:hover {
@@ -331,3 +335,47 @@ body, html {
     font-size: 1rem;
   }
 }
+
+.alt-points-container {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.alt-point-card {
+  background: #275676;
+  padding: 1.5rem;
+  border-radius: 14px;
+  width: 260px;
+  color: white;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.alt-point-card:hover {
+  transform: translateY(-8px);
+}
+
+.alt-point-card h3 {
+  margin: 0 0 1rem;
+  font-size: 1.2rem;
+}
+
+.alt-point-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 0.7rem;
+}
+
+.alt-point-card .location-link {
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-size: 1rem;
+  text-decoration: underline;
+  color: #d8e7f5;
+}
+
