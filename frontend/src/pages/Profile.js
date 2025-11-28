@@ -25,17 +25,17 @@ const Profile = () => {
 
   // Fetch the user info from the backend
   axios
-    .get(`http://localhost:4000/api/members/${id}`, config)
+    .get(`https://semv-slp.onrender.com/api/members/${id}`, config)
     .then((res) => setUser(res.data)) // Set the user state
     .catch(() => setError("Failed to load user info"));
 
   axios
-    .get(`http://localhost:4000/api/members/${id}/borrows`, config)
+    .get(`https://semv-slp.onrender.com/api/members/${id}/borrows`, config)
     .then((res) => setBorrows(res.data))
     .catch(() => console.error("Error fetching borrows"));
 
   axios
-    .get(`http://localhost:4000/api/members/${id}/donations`, config)
+    .get(`https://semv-slp.onrender.com/api/members/${id}/donations`, config)
     .then((res) => setDonations(res.data))
     .catch(() => console.error("Error fetching donations"));
 }, []);
@@ -74,7 +74,7 @@ const Profile = () => {
   try {
     // Make the API request to update the user profile
     const res = await axios.put(
-      `http://localhost:4000/api/members/${id}`,
+      `https://semv-slp.onrender.com/api/members/${id}`,
       updatedUser,
       config
     );

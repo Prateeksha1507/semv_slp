@@ -8,7 +8,7 @@ npm install
 npm run dev
 ```
 
-Base URL: `http://localhost:4000`
+Base URL: `https://semv-slp.onrender.com`
 
 Routes:
 - Members: `/api/members`
