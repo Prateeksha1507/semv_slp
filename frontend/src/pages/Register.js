@@ -33,7 +33,7 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:4000/api/members/signup", {
+      const res = await axios.post("https://semv-slp.onrender.com/api/members/signup", {
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -61,7 +61,7 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:4000/api/members/verify-otp", {
+      const res = await axios.post("https://semv-slp.onrender.com/api/members/verify-otp", {
         name: formData.name,
         email: formData.email,
         password: formData.password,

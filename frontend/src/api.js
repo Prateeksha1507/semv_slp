@@ -3,7 +3,7 @@ import axios from "axios";
 const TOKEN_NAME = "bhc_token"
 const USER="bhc_user"
 const API = axios.create({
-  baseURL: "http://localhost:4000/api",
+  baseURL: "https://semv-slp.onrender.com/api",
 });
 
 API.interceptors.request.use((req) => {

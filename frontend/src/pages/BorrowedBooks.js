@@ -12,7 +12,7 @@ const BorrowedBooks = () => {
     const fetchBorrowed = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:4000/api/borrows/borrowed",
+          "https://semv-slp.onrender.com/api/borrows/borrowed",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -32,7 +32,7 @@ const BorrowedBooks = () => {
   const handleReturn = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:4000/api/borrows/return/${id}`,
+        `https://semv-slp.onrender.com/api/borrows/return/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

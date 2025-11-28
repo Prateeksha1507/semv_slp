@@ -32,8 +32,8 @@ const Books = () => {
       const token = getToken();
 
       const url = search.trim()
-        ? "http://localhost:4000/api/books/search"
-        : "http://localhost:4000/api/books";
+        ? "https://semv-slp.onrender.com/api/books/search"
+        : "https://semv-slp.onrender.com/api/books";
 
       const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },

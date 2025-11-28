@@ -21,7 +21,7 @@ const AddBook = () => {
     if (!token) return;
 
     axios
-      .get("http://localhost:4000/api/members/me", {
+      .get("https://semv-slp.onrender.com/api/members/me", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setDonorName(res.data.name))
@@ -64,7 +64,7 @@ const AddBook = () => {
         imageUrl = cloudRes.data.secure_url;
       }
       const res = await axios.post(
-        "http://localhost:4000/api/books",
+        "https://semv-slp.onrender.com/api/books",
         {
           title: book.title,
           author: book.author,

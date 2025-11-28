@@ -10,7 +10,7 @@ const DonationRequests = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/donation-requests", {
+        const res = await axios.get("https://semv-slp.onrender.com/api/donation-requests", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -57,7 +57,7 @@ const DonationRequests = () => {
                   onClick={async () => {
                     try {
                       await axios.patch(
-                        `http://localhost:4000/api/donation-requests/approved/${d._id}`,
+                        `https://semv-slp.onrender.com/api/donation-requests/approved/${d._id}`,
                         {},
                         { headers: { Authorization: `Bearer ${token}` } }
                       );

@@ -11,7 +11,7 @@ const BorrowRequests = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/borrows", {
+        const res = await axios.get("https://semv-slp.onrender.com/api/borrows", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

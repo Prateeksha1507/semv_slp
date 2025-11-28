@@ -21,7 +21,7 @@ const Login = ({ setIsLoggedIn }) => {
   setLoading(true);
 
   try {
-    const res = await axios.post("http://localhost:4000/api/members/login", {
+    const res = await axios.post("https://semv-slp.onrender.com/api/members/login", {
       email,
       password,
     });

@@ -23,7 +23,7 @@ const AdminDashboard = () => {
 const fetchData = async () => {
   try {
     // Fetch Borrow Requests
-    const borrowRes = await axios.get("http://localhost:4000/api/borrows", {
+    const borrowRes = await axios.get("https://semv-slp.onrender.com/api/borrows", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -38,7 +38,7 @@ const fetchData = async () => {
     const sortedBorrowRequests = [...pendingBorrowRequests, ...nonPendingBorrowRequests];
     setRequests(sortedBorrowRequests.slice(0, 5)); 
 
-    const donationRes = await axios.get("http://localhost:4000/api/donation-requests", {
+    const donationRes = await axios.get("https://semv-slp.onrender.com/api/donation-requests", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -54,7 +54,7 @@ const fetchData = async () => {
     setDonationRequests(sortedDonationRequests.slice(0, 5));
 
     const borrowedRes = await axios.get(
-      "http://localhost:4000/api/borrows/borrowed",
+      "https://semv-slp.onrender.com/api/borrows/borrowed",
       { headers: { Authorization: `Bearer ${token}` } }
     );
     setBorrowedBooks(borrowedRes.data.slice(0, 10)); 
@@ -69,7 +69,7 @@ const fetchData = async () => {
     try {
       if (type === "borrow") {
         await axios.patch(
-          `http://localhost:4000/api/borrows/update/${id}`,
+          `https://semv-slp.onrender.com/api/borrows/update/${id}`,
           { status },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -77,7 +77,7 @@ const fetchData = async () => {
         fetchData();
         
       } else if (type === "donation") {
-        const actionUrl = `http://localhost:4000/api/donation-requests/${status.toLowerCase()}/${id}`;
+        const actionUrl = `https://semv-slp.onrender.com/api/donation-requests/${status.toLowerCase()}/${id}`;
         const response = await axios.patch(actionUrl, {}, { headers: { Authorization: `Bearer ${token}` } });
         showToast(`Donation request ${status} successfully`);
         fetchData(); 
@@ -92,7 +92,7 @@ const fetchData = async () => {
   const handleReturn = async (borrowId) => {
     try {
       await axios.patch(
-        `http://localhost:4000/api/borrows/return/${borrowId}`,
+        `https://semv-slp.onrender.com/api/borrows/return/${borrowId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
