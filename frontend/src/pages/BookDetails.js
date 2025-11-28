@@ -36,7 +36,7 @@ const BookDetails = () => {
           return;
         }
 
-        const url = `http://localhost:4000/api/books/${bookId}`;
+        const url = `https://semv-slp.onrender.com/api/books/${bookId}`;
         console.log("BookDetails: GET", url);
 
         const res = await axios.get(url, {
