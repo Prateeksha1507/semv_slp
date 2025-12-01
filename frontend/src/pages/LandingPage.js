@@ -96,38 +96,38 @@ const LandingPage = () => {
 <div className="alt-points-container">
   <div className="alt-point-card">
     <h3>📍 Rajput Photostat Shop – Infront of Pink Booth Police Chauki,Gandhi Vihar</h3>
-    <img src="/images/civil-lines.jpg" alt="Rajput Photostat Shop" />
-    <a href="https://maps.google.com" className="location-link">View Location</a>
+    <img src="/landingpage/Rajput-photocopy.png" alt="Rajput Photostat Shop" />
+    <a href="https://goo.gl/maps/6fe14CVABHc64XLM6" className="location-link">View Location</a>
   </div>
 
   <div className="alt-point-card">
     <h3>📍 Dhingra Saintary store – Infront of 4 Block Park, double Story, Vijay Nagar</h3>
-    <img src="/images/ashok-vihar.jpg" alt="Dhingra Saintary store" />
-    <a href="https://maps.google.com" className="location-link">View Location</a>
+    <img src="/landingpage/Otherone.png" alt="Dhingra Saintary store" />
+    <a href="https://goo.gl/maps/u3fxmG1oLhPEkV9s6?g_st=aw" className="location-link">View Location</a>
   </div>
 
   <div className="alt-point-card">
-    <h3>📍 Photostat Xerox point shop – Beside DUDU office & Nandi Joshi canteen</h3>
-    <img src="/images/karol-bagh.jpg" alt="Photostat Xerox point shop" />
-    <a href="https://maps.google.com" className="location-link">View Location</a>
+    <h3>📍 Photostat Xerox point shop – Beside DUSU office & Nandi Joshi canteen</h3>
+    <img src="/landingpage/Artsfac-photocopy.png" alt="Photostat Xerox point shop" />
+    <a href="https://goo.gl/maps/xGSXzJRYiV7m3BeE6" className="location-link">View Location</a>
   </div>
 
   <div className="alt-point-card">
     <h3>📍 Green Cafe Maggi Point – Near Hindu College & St. Stephen's College</h3>
-    <img src="/images/karol-bagh.jpg" alt="Green Cafe Maggi Point" />
-    <a href="https://maps.google.com" className="location-link">View Location</a>
+    <img src="/landingpage/GreenCafe.png" alt="Green Cafe Maggi Point" />
+    <a href="https://goo.gl/maps/2c8ehnvYFWjfaAA37?g_st=aw" className="location-link">View Location</a>
   </div>
 
   <div className="alt-point-card">
     <h3>📍 Kirori Mal College Hostel Canteen – Near Boys Hostel, Sports ground</h3>
-    <img src="/images/karol-bagh.jpg" alt="Kirori Mal College Hostel Canteen" />
-    <a href="https://maps.google.com" className="location-link">View Location</a>
+    <img src="/landingpage/KMC-Canteen.png" alt="Kirori Mal College Hostel Canteen" />
+    <a href="https://goo.gl/maps/jti8evZVYakseQF1A?g_st=aw" className="location-link">View Location</a>
   </div>
 
   <div className="alt-point-card">
     <h3>📍Amul DRC – Amul, Daulat Ram College</h3>
-    <img src="/images/karol-bagh.jpg" alt="Amul DRC" />
-    <a href="https://maps.google.com" className="location-link">View Location</a>
+    <img src="/landingpage/Amul.png" alt="Amul DRC" />
+    <a href="https://goo.gl/maps/LPZpzBSj3r3y1WXL6?g_st=aw" className="location-link">View Location</a>
   </div>
 
   <div className="alt-point-card">
@@ -137,9 +137,9 @@ const LandingPage = () => {
   </div>
 
   <div className="alt-point-card">
-    <h3>📍 JUMBOKING – Near Vishwavidyalay Metro station Gate no. 3 & 4. </h3>
-    <img src="/images/karol-bagh.jpg" alt="JUMBOKING" />
-    <a href="https://maps.google.com" className="location-link">View Location</a>
+    <h3>📍 Nainital Momos – Near Vishwavidyalay Metro station Gate no. 3 & 4. </h3>
+    <img src="/landingpage/NainitalMomo.png" alt="JUMBOKING" />
+    <a href="https://goo.gl/maps/Ywqr2NxkJ5BK9kSG6?g_st=aw" className="location-link">View Location</a>
   </div>
 </div>
 

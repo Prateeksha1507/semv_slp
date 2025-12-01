@@ -4,15 +4,16 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #b8c9e1 0%, #d3e0f0 100%);
   display: flex;
-  justify-content: left; /* Center form and text */
-  align-items: center;
-  padding-left: 10%;
-  padding-right: 10%;
+  flex-direction: row;              /* Row layout */
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 40px 10%;
+  gap: 30px;                        /* space between form & panel */
   box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+
+
 
 /* White form card */
 .addbook-form {
@@ -26,6 +27,8 @@
   position: relative;
   z-index: 10;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  margin-left: auto;
+  flex: 1;
 }
 
 .addbook-form:hover {
@@ -119,15 +122,17 @@
 /* Text on the right */
 /* Right-side environmental info panel */
 .side-panel {
-  position: absolute;
-  right: 10%;
-  top: 45%;
-  transform: translateY(-50%);
-  width: 600px;
-  z-index: 20;
+  width: 100%;
+  max-width: 700px;
+  margin-top: 50px;
+  text-align: center;
   color: #2d2a44;
   animation: slideInRight 0.6s ease-out;
+  position: relative; 
+  flex: 1;                     /* smaller area */
+  order: 2;  
 }
+
 
 
 /* Big bold heading */
@@ -144,7 +149,7 @@
 }
 
 .impact-box {
-  width: 48%;
+  width: calc(50% - 8px);
   background: rgba(255, 255, 255, 0.35);
   padding: 22px 20px;
   border-radius: 14px;
@@ -176,11 +181,43 @@
 }
 
 /* Responsive: hide side panel on small screens */
+/* TABLETS — move side panel below form */
 @media (max-width: 1024px) {
+  .addbook-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 4%;
+  }
+
   .side-panel {
+  width: 100%;
+  max-width: 700px;
+  margin-top: 40px;
+  text-align: center;
+  color: #2d2a44;
+  animation: slideInRight 0.6s ease-out;
+  position: relative; /* ensures normal document flow */
+}
+
+
+  .impact-row {
+    justify-content: center;
+  }
+
+  .impact-box {
+    width: 45%;
+  }
+
+  .decor-circle {
     display: none;
   }
+
+  .addbook-form {
+    width: 90%;
+    max-width: 450px;
+  }
 }
+
 
 
 /* Animated Text */
@@ -203,7 +240,7 @@
   background: #ffffff35;
   filter: blur(100px);
   border-radius: 50%;
-  right: -40px;
+  right: 0;
   top: 18%;
   z-index: 1;
   animation: pulseCircle 4s infinite;
@@ -245,24 +282,28 @@
   }
 }
 
-@media (max-width: 500px) {
+/* MOBILE — hide side panel completely */
+@media (max-width: 600px) {
+  .side-panel {
+    display: block;
+  }
+
   .addbook-form {
     width: 100%;
-    padding: 28px 20px;
+    padding: 26px 20px;
   }
 
   .addbook-form h2 {
-    font-size: 24px;
-  }
-
-  .side-text {
     font-size: 22px;
-    width: 300px;
   }
 
-  .addbook-form button {
-    padding: 12px;
-    font-size: 14px;
+  .impact-row {
+    flex-direction: column;
+  }
+
+  .impact-box {
+    width: 100%;
   }
 }
+
 
