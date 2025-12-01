@@ -1,12 +1,12 @@
+import formData from "form-data";
 import Mailgun from "mailgun.js";
-import FormData from "form-data";
 
-const mailgun = new Mailgun(FormData);
+const mailgun = new Mailgun(formData);
 
-const mg = mailgun.client({
+const client = mailgun.client({
   username: "api",
   key: process.env.MAILGUN_API_KEY,
-  url: "https://api.mailgun.net", 
+  url: "https://api.mailgun.net"
 });
 
-export default mg;
+export default client;

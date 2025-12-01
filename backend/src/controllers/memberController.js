@@ -47,22 +47,23 @@ async signup(req, res) {
 
     const data = {
       from: process.env.MAILGUN_FROM,
-      to: email,
+      to: [email],
       subject: "Verify your email",
-      text: `Your OTP is: ${otpCode}. It expires in 10 minutes.`
+      text: `Your OTP is: ${otpCode}. It expires in 10 minutes.`,
     };
 
-    await mg.messages().send(data);
+    await mg.messages.create(process.env.MAILGUN_DOMAIN, data);
 
-    console.log("OTP sent via Mailgun");
+    console.log("✅ OTP sent via Mailgun");
 
     res.json({ success: true, message: "OTP sent successfully" });
 
   } catch (err) {
-    console.error("Signup Error:", err);
+    console.error("❌ Signup Error:", err);
     res.status(500).json({ message: "OTP email failed" });
   }
 },
+
 
   // ------------------ VERIFY OTP ------------------
   async verifyOtp(req, res) {
