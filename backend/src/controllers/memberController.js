@@ -3,6 +3,9 @@ import Member from "../models/Member.js";
 import Borrow from "../models/Borrow.js";
 import Donate from "../models/Donate.js";
 import transporter from "../jobs/nodemailer.js";
+import { sendEmail } from "../jobs/brevoClient.js";
+
+
 import Otp from "../models/Otp.js";
 
 function signToken(member) {
@@ -21,57 +24,77 @@ export const memberController = {
   // memberController.js
 
 async signup(req, res) {
+  console.log("Signup request received:", req.body);
+
   try {
     const { name, email, password, phone } = req.body;
-    
+
+    if (!name || !email || !password || !phone) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
     const exists = await Member.findOne({ email });
     if (exists) return res.status(409).json({ message: "Email already registered" });
 
-    // generate OTP
+    // Generate OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiry
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     await Otp.findOneAndUpdate(
       { email },
       { otp: otpCode, expiresAt },
-      { upsert: true }
+      { upsert: true, new: true }
     );
 
-    // send OTP
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Verify your email",
-      text: `Your OTP is: ${otpCode}. It expires in 10 minutes.`
-    });
+    console.log("✅ OTP saved:", otpCode);
 
-    res.json({ success: true, message: "OTP sent to email" });
+  await sendEmail({
+    to: email,
+    subject: "Verify your email",
+    text: `Your OTP is: ${otpCode}. It expires in 10 minutes.`,
+  });
+
+
+    console.log("✅ OTP Sent via Brevo");
+
+    res.json({ success: true, message: "OTP sent successfully" });
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("❌ Signup Error:", err);
+    res.status(500).json({ message: "OTP email failed" });
   }
 },
+
+
+  // ------------------ VERIFY OTP ------------------
   async verifyOtp(req, res) {
-  try {
-    const { name, email, password, phone, otp } = req.body;
+    try {
+      const { name, email, password, phone, otp } = req.body;
 
-    const record = await Otp.findOne({ email });
-    if (!record) return res.status(400).json({ message: "OTP not found" });
+      if (!name || !email || !password || !phone || !otp) {
+        return res.status(400).json({ message: "All fields and OTP are required" });
+      }
 
-    if (record.otp !== otp || record.expiresAt < new Date()) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
+      const record = await Otp.findOne({ email });
+      if (!record) return res.status(400).json({ message: "OTP not found" });
+
+      if (record.otp !== otp || record.expiresAt < new Date()) {
+        return res.status(400).json({ message: "Invalid or expired OTP" });
+      }
+
+      // Create the member
+      const member = await Member.create({ name, email, password, phone });
+      console.log("Member created:", member.email);
+
+      // Delete OTP
+      await Otp.deleteOne({ email });
+
+      res.json({ success: true, message: "Signup successful" });
+    } catch (err) {
+      console.error("Verify OTP Error:", err);
+      res.status(500).json({ message: err.message });
     }
-
-    // Create the member
-    const member = await Member.create({ name, email, password, phone });
-    
-    // delete OTP record
-    await Otp.deleteOne({ email });
-
-    res.json({ success: true, message: "Signup successful" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-},
+  },
 
 
   async login(req, res) {

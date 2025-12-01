@@ -42,7 +42,7 @@ const Register = () => {
 
       if (res.data?.success) {
         showToast(res.data.message);
-        setMemberId(res.data.memberId);
+        // setMemberId(res.data.memberId);
         setShowOtp(true); 
       } else {
         showToast(res.data.message || "Signup failed", "error");

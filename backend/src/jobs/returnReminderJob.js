@@ -1,51 +1,41 @@
-import cron from "node-cron";
 import Borrow from "../models/Borrow.js";
-import transporter from "./nodemailer.js"; // reuse transporter
+import { sendEmail } from "./brevoClient.js";
 
-// Schedule daily at 9 AM
-cron.schedule("0 9 * * *", async () => {
-  console.log("Checking for return reminders...");
-
+export async function sendReturnReminders() {
   try {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const today = new Date();
+    
+    // Target is tomorrow (1 day before return)
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    
+    const endOfTomorrow = new Date(tomorrow);
+    endOfTomorrow.setHours(23, 59, 59, 999);
 
-    const start = new Date(tomorrow.setHours(0, 0, 0, 0));
-    const end = new Date(tomorrow.setHours(23, 59, 59, 999));
+    // Find books due tomorrow
+    const booksToReturn = await Borrow.find({
+      dueDate: { $gte: tomorrow, $lte: endOfTomorrow },
+      returned: false,
+    }).populate("borrower", "email name");
 
-    const borrows = await Borrow.find({
-      returnDate: { $gte: start, $lte: end },
-      status: "borrowed",
-      reminderSent: false,
-    }).populate("borrower book");
+    for (const record of booksToReturn) {
+      const email = record.borrower.email;
+      const name = record.borrower.name;
 
-    for (const b of borrows) {
-      if (!b.borrower.email) continue;
+      const text = `Hello ${name},\n\nThis is a friendly reminder that your borrowed book "${record.bookTitle}" is due tomorrow (${record.dueDate.toDateString()}).\n\nPlease return it on time.\n\nThank you!`;
 
-      const emailOptions = {
-        from: process.env.EMAIL_USER,
-        to: b.borrower.email,
-        subject: `Book Return Reminder: ${b.book.title}`,
-        text: `Hi ${b.borrower.name},
+      await sendEmail({
+        to: email,
+        subject: "Return Reminder",
+        text,
+      });
 
-This is a reminder that your borrowed book "${b.book.title}" is due tomorrow: ${b.returnDate.toDateString()}.
-
-Please return it on time.
-
-Library Admin
-BHC`,
-      };
-
-      await transporter.sendMail(emailOptions);
-
-      b.reminderSent = true;
-      await b.save();
-
-      console.log("Reminder sent to:", b.borrower.email);
+      console.log(`Reminder sent to ${email} for book "${record.bookTitle}"`);
     }
-  } catch (err) {
-    console.error("Error sending reminders:", err);
-  }
-});
 
-console.log("Return reminder cron job scheduled.");
+    console.log("All return reminders sent!");
+  } catch (err) {
+    console.error("Error sending return reminders:", err);
+  }
+}
