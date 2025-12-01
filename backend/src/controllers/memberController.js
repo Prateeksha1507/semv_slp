@@ -2,7 +2,8 @@ import jwt from "jsonwebtoken";
 import Member from "../models/Member.js";
 import Borrow from "../models/Borrow.js";
 import Donate from "../models/Donate.js";
-import transporter from "../jobs/nodemailer.js";
+import mg from "../jobs/mailgun.js";
+
 import Otp from "../models/Otp.js";
 
 function signToken(member) {
@@ -21,50 +22,47 @@ export const memberController = {
   // memberController.js
 
 async signup(req, res) {
-    console.log("Signup request received:", req.body);
-    try {
-      const { name, email, password, phone } = req.body;
+  console.log("Signup request received:", req.body);
 
-      if (!name || !email || !password || !phone) {
-        return res.status(400).json({ message: "All fields are required" });
-      }
+  try {
+    const { name, email, password, phone } = req.body;
 
-      const exists = await Member.findOne({ email });
-      if (exists) return res.status(409).json({ message: "Email already registered" });
-
-      // Generate OTP
-      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
-
-      console.log("Inserting/updating OTP in DB...");
-      await Otp.findOneAndUpdate(
-        { email },
-        { otp: otpCode, expiresAt },
-        { upsert: true, new: true }
-      );
-      console.log("OTP inserted in DB:", otpCode);
-
-      // Send OTP email
-      console.log("Sending OTP email...");
-      try {
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER,
-          to: email,
-          subject: "Verify your email",
-          text: `Your OTP is: ${otpCode}. It expires in 10 minutes.`,
-        });
-        console.log("OTP email sent to:", email);
-      } catch (mailErr) {
-        console.error("Error sending OTP email:", mailErr);
-        return res.status(500).json({ message: "Failed to send OTP email" });
-      }
-
-      res.json({ success: true, message: "OTP sent to email" });
-    } catch (err) {
-      console.error("Signup Error:", err);
-      res.status(500).json({ message: err.message });
+    if (!name || !email || !password || !phone) {
+      return res.status(400).json({ message: "All fields are required" });
     }
-  },
+
+    const exists = await Member.findOne({ email });
+    if (exists) return res.status(409).json({ message: "Email already registered" });
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await Otp.findOneAndUpdate(
+      { email },
+      { otp: otpCode, expiresAt },
+      { upsert: true, new: true }
+    );
+
+    console.log("OTP saved:", otpCode);
+
+    const data = {
+      from: process.env.MAILGUN_FROM,
+      to: email,
+      subject: "Verify your email",
+      text: `Your OTP is: ${otpCode}. It expires in 10 minutes.`
+    };
+
+    await mg.messages().send(data);
+
+    console.log("OTP sent via Mailgun");
+
+    res.json({ success: true, message: "OTP sent successfully" });
+
+  } catch (err) {
+    console.error("Signup Error:", err);
+    res.status(500).json({ message: "OTP email failed" });
+  }
+},
 
   // ------------------ VERIFY OTP ------------------
   async verifyOtp(req, res) {
