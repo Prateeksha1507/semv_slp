@@ -2,7 +2,8 @@ import jwt from "jsonwebtoken";
 import Member from "../models/Member.js";
 import Borrow from "../models/Borrow.js";
 import Donate from "../models/Donate.js";
-import mg from "../jobs/mailgun.js";
+import transporter from "../jobs/nodemailer.js";
+
 
 import Otp from "../models/Otp.js";
 
@@ -34,6 +35,7 @@ async signup(req, res) {
     const exists = await Member.findOne({ email });
     if (exists) return res.status(409).json({ message: "Email already registered" });
 
+    // Generate OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
@@ -43,18 +45,17 @@ async signup(req, res) {
       { upsert: true, new: true }
     );
 
-    console.log("OTP saved:", otpCode);
+    console.log("✅ OTP saved:", otpCode);
 
-    const data = {
-      from: process.env.MAILGUN_FROM_EMAIL,
-      to: [email],
+    // ✅ SEND EMAIL USING BREVO
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,   // VERIFIED EMAIL IN BREVO
+      to: email,
       subject: "Verify your email",
       text: `Your OTP is: ${otpCode}. It expires in 10 minutes.`,
-    };
+    });
 
-    await mg.messages.create(process.env.MAILGUN_DOMAIN, data);
-
-    console.log("✅ OTP sent via Mailgun");
+    console.log("✅ OTP Sent via Brevo");
 
     res.json({ success: true, message: "OTP sent successfully" });
 
