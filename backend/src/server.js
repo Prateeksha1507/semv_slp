@@ -1,6 +1,6 @@
 import "dotenv/config.js";
 import express from "express";
-// import cors from "cors";
+import cors from "cors";
 import morgan from "morgan";
 import { connectDB } from "./config/db.js";
 import "./jobs/returnReminderJob.js";
@@ -15,32 +15,10 @@ import donationRequestRoutes from "./routes/donationRequestRoutes.js";
 
 const app = express();
 
-const allowedOrigins = [
-  "https://bhc-website.vercel.app",
-  "http://localhost:3000",
-  "http://localhost:5173"
-];
-
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // ✅ Pass preflight immediately
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
-
-
+app.use(cors({
+  origin: "https://bhc-website.vercel.app",
+  credentials: true,
+}));
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 
