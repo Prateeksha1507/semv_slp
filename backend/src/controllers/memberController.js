@@ -21,6 +21,7 @@ export const memberController = {
   // memberController.js
 
 async signup(req, res) {
+  console.log(req.body)
   try {
     const { name, email, password, phone } = req.body;
     
