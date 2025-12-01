@@ -21,58 +21,80 @@ export const memberController = {
   // memberController.js
 
 async signup(req, res) {
-  console.log(req.body)
-  try {
-    const { name, email, password, phone } = req.body;
-    
-    const exists = await Member.findOne({ email });
-    if (exists) return res.status(409).json({ message: "Email already registered" });
+    console.log("Signup request received:", req.body);
+    try {
+      const { name, email, password, phone } = req.body;
 
-    // generate OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiry
+      if (!name || !email || !password || !phone) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
 
-    await Otp.findOneAndUpdate(
-      { email },
-      { otp: otpCode, expiresAt },
-      { upsert: true }
-    );
+      const exists = await Member.findOne({ email });
+      if (exists) return res.status(409).json({ message: "Email already registered" });
 
-    // send OTP
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Verify your email",
-      text: `Your OTP is: ${otpCode}. It expires in 10 minutes.`
-    });
+      // Generate OTP
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
 
-    res.json({ success: true, message: "OTP sent to email" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-},
-  async verifyOtp(req, res) {
-  try {
-    const { name, email, password, phone, otp } = req.body;
+      console.log("Inserting/updating OTP in DB...");
+      await Otp.findOneAndUpdate(
+        { email },
+        { otp: otpCode, expiresAt },
+        { upsert: true, new: true }
+      );
+      console.log("OTP inserted in DB:", otpCode);
 
-    const record = await Otp.findOne({ email });
-    if (!record) return res.status(400).json({ message: "OTP not found" });
+      // Send OTP email
+      console.log("Sending OTP email...");
+      try {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: "Verify your email",
+          text: `Your OTP is: ${otpCode}. It expires in 10 minutes.`,
+        });
+        console.log("OTP email sent to:", email);
+      } catch (mailErr) {
+        console.error("Error sending OTP email:", mailErr);
+        return res.status(500).json({ message: "Failed to send OTP email" });
+      }
 
-    if (record.otp !== otp || record.expiresAt < new Date()) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
+      res.json({ success: true, message: "OTP sent to email" });
+    } catch (err) {
+      console.error("Signup Error:", err);
+      res.status(500).json({ message: err.message });
     }
+  },
 
-    // Create the member
-    const member = await Member.create({ name, email, password, phone });
-    
-    // delete OTP record
-    await Otp.deleteOne({ email });
+  // ------------------ VERIFY OTP ------------------
+  async verifyOtp(req, res) {
+    try {
+      const { name, email, password, phone, otp } = req.body;
 
-    res.json({ success: true, message: "Signup successful" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-},
+      if (!name || !email || !password || !phone || !otp) {
+        return res.status(400).json({ message: "All fields and OTP are required" });
+      }
+
+      const record = await Otp.findOne({ email });
+      if (!record) return res.status(400).json({ message: "OTP not found" });
+
+      if (record.otp !== otp || record.expiresAt < new Date()) {
+        return res.status(400).json({ message: "Invalid or expired OTP" });
+      }
+
+      // Create the member
+      const member = await Member.create({ name, email, password, phone });
+      console.log("Member created:", member.email);
+
+      // Delete OTP
+      await Otp.deleteOne({ email });
+
+      res.json({ success: true, message: "Signup successful" });
+    } catch (err) {
+      console.error("Verify OTP Error:", err);
+      res.status(500).json({ message: err.message });
+    }
+  },
 
 
   async login(req, res) {
