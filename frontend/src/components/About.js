@@ -4,28 +4,16 @@ import "./About.css";
 
 const teamMembers = [
   {
-    name: "Alice Sharma",
-    role: "Founder & Campaign Lead",
+    name: "Anurag kumar",
+    role: "Founder & President",
     image:
-      "https://randomuser.me/api/portraits/women/44.jpg"
+      "/about/Anurag.png"
   },
   {
-    name: "Ravi Gupta",
-    role: "Program Coordinator",
+    name: "Prateek Surya",
+    role: "Vice President & Director",
     image:
-      "https://randomuser.me/api/portraits/men/35.jpg"
-  },
-  {
-    name: "Priya Singh",
-    role: "Community Outreach",
-    image:
-      "https://randomuser.me/api/portraits/women/65.jpg"
-  },
-  {
-    name: "Amit Joshi",
-    role: "Volunteer Manager",
-    image:
-      "https://randomuser.me/api/portraits/men/50.jpg"
+      "/about/Prateek.png"
   },
 ];
 
