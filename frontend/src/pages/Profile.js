@@ -130,14 +130,14 @@ const Profile = () => {
             onChange={handleInputChange}
             required
           />
-          <label>Email:</label>
+          {/* <label>Email:</label>
           <input
             type="email"
             name="email"
             value={updatedUser.email}
             onChange={handleInputChange}
             required
-          />
+          /> */}
           <button type="submit">Save Changes</button>
           <button type="button" onClick={() => setIsEditing(false)}>
             Cancel
