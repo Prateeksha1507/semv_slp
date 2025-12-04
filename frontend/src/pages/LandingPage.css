@@ -73,13 +73,18 @@ body, html {
   background: #20222a;
   border-radius: 17px;
   padding: 1.2rem 1rem 2rem;
-  width: 240px;
+  width: 240px;        /* default width */
+  min-height: 320px;   /* same height for all cards */
   box-shadow: 0 8px 32px rgba(90, 107, 175, 0.22);
   transform: rotate(-7deg) scale(1);
   transition: transform 0.2s;
   position: relative;
   z-index: 0;
+  display: flex;       /* optional: to align content */
+  flex-direction: column;
+  height: 360px;
 }
+
 
 .photo-card.card0 {background: #b8fff2; transform: rotate(-7deg);}
 .photo-card.card1 {background: #ffd6fd; transform: rotate(6deg);}
@@ -87,6 +92,8 @@ body, html {
 
 .photo-card img {
   width: 100%;
+  height: 55%;
+  object-fit: cover;
   border-radius: 12px;
   margin-bottom: 1rem;
   box-shadow: 0 3px 18px rgba(0,60,120,0.21);
@@ -323,6 +330,10 @@ body, html {
     justify-content: center !important;
     flex-wrap: wrap; /* allows them to adjust without overlap */
     gap: 1rem;
+    display: flex;
+    flex-wrap: wrap;           /* allows cards to move to next row */
+    justify-content: center;   /* centers cards horizontally */
+    gap: 1rem;  
   }
 
 }
@@ -333,16 +344,22 @@ body, html {
 
   .photo-card {
     width: 100px;
-     transform: none !important; /* removes tilt */
+    transform: none !important; /* removes tilt */
     margin: 0 auto;
     width: 150px; /* optional for better spacing */
+    width: 90%;      /* almost full width on small screens */
+    margin: 0 auto; 
+     min-height: 320px;         /* same height for all cards */
+    flex: 0 0 40%;             /* each card takes ~40% of container width */
+    max-width: 40%;
+    margin: 0;                 /* remove auto margins */
+    transform: none !important; /* optional: remove rotation on small screens */
   }
 
   .section-cards {
     flex-direction: column;
     gap: 1.5rem;
     align-items: center;
-    
   }
 
   .section-card {
@@ -417,4 +434,3 @@ body, html {
   color: #d8e7f5;
   margin-top: auto;
 }
-
