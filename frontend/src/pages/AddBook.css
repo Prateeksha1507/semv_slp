@@ -1,4 +1,10 @@
 /* Full page container */
+  * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+
 .addbook-container {
   width: 100%;
   min-height: 100vh;
@@ -7,12 +13,13 @@
   flex-direction: row;              /* Row layout */
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 40px 10%;
+  padding: 40px 5%;
   gap: 30px;                        /* space between form & panel */
   box-sizing: border-box;
+  margin: 0 auto;        /* Centers entire layout */
+  overflow-x: hidden;
+  max-width: 1200px;
 }
-
-
 
 
 /* White form card */
@@ -28,7 +35,7 @@
   z-index: 10;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   margin-left: auto;
-  flex: 1;
+  flex-shrink: 0;
 }
 
 .addbook-form:hover {
@@ -123,7 +130,8 @@
 /* Right-side environmental info panel */
 .side-panel {
   width: 100%;
-  max-width: 700px;
+  max-width: 600px;
+  min-width: 300px;
   margin-top: 50px;
   text-align: center;
   color: #2d2a44;
@@ -264,17 +272,22 @@
 /* ----------------- RESPONSIVE ----------------- */
 @media (max-width: 1024px) {
   .addbook-container {
-    justify-content: center;
-    padding-left: 5%;
-  }
-
-  .side-text {
-    display: none;
+    flex-direction: column;
+    align-items: center;      /* centers form + side panel */
+    justify-content: flex-start;
+    padding: 20px 4%;
   }
 
   .addbook-form {
+    margin: 0 auto;           /* ensure horizontal centering */
     width: 90%;
-    padding: 28px 24px;
+    max-width: 450px;
+  }
+
+  .side-panel {
+    margin: 40px auto 0 auto; /* center this too */
+    width: 100%;
+    max-width: 700px;
   }
 
   .decor-circle {
@@ -283,12 +296,36 @@
 }
 
 /* MOBILE — hide side panel completely */
+
 @media (max-width: 600px) {
-  .side-panel {
-    display: block;
+
+  .addbook-container {
+    padding: 20px 10px;  /* reduce padding */
+    overflow-x: hidden;  /* prevent right overflow */
   }
 
-  .addbook-form {
+  .side-panel {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .impact-row {
+    display: flex;
+    flex-direction: column !important;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .impact-box {
+    width: 100% !important;   /* prevents overflow */
+  }
+
+  .decor-circle {
+    display: none !important;
+  }
+
+    .addbook-form {
     width: 100%;
     padding: 26px 20px;
   }
@@ -296,14 +333,10 @@
   .addbook-form h2 {
     font-size: 22px;
   }
-
-  .impact-row {
-    flex-direction: column;
-  }
-
-  .impact-box {
-    width: 100%;
-  }
 }
+
+
+
+
 
 

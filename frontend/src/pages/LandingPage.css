@@ -1,6 +1,8 @@
 body, html {
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+
 }
 
 .main-landing {
@@ -103,6 +105,16 @@ body, html {
   color: #333;
 }
 
+.section-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;   /* Centers the cards horizontally */
+         /* Optional: vertically center if needed */
+  gap: 20px;                 /* Space between cards */
+  width: 100%;
+}
+
+
 .section-cards {
   display: flex;
   gap: 2vw;
@@ -110,6 +122,7 @@ body, html {
   margin-top: 5rem;
   flex-wrap: wrap;
   padding-bottom: 1rem;
+  align-items: center;
 }
 
 .section-card {
@@ -303,6 +316,16 @@ body, html {
   .hero-left {
     text-align: center;
   }
+  @media (max-width: 600px) {
+  .hero-right {
+    align-items: center;
+    flex-direction: row !important;
+    justify-content: center !important;
+    flex-wrap: wrap; /* allows them to adjust without overlap */
+    gap: 1rem;
+  }
+
+}
 
   .campaign-title {
     font-size: 2rem;
@@ -310,17 +333,22 @@ body, html {
 
   .photo-card {
     width: 100px;
+     transform: none !important; /* removes tilt */
+    margin: 0 auto;
+    width: 150px; /* optional for better spacing */
   }
 
   .section-cards {
     flex-direction: column;
     gap: 1.5rem;
     align-items: center;
+    
   }
 
   .section-card {
     min-width: 80%;
     padding: 1.2rem 1rem;
+    justify-content: center;
   }
 
   .section-card h2 {
@@ -348,6 +376,7 @@ body, html {
   gap: 2rem;
   flex-wrap: wrap;
   margin-top: 2rem;
+  justify-content: center !important;
 }
 
 .alt-point-card {
@@ -359,6 +388,8 @@ body, html {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
   text-align: center;
   transition: transform 0.2s ease;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .alt-point-card:hover {
