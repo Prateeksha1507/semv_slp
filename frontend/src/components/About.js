@@ -4,7 +4,7 @@ import "./About.css";
 
 const teamMembers = [
   {
-    name: "Anurag kumar",
+    name: "Anurag Kumar",
     role: "Founder & President",
     image:
       "/about/Anurag.png"
